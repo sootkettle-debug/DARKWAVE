@@ -131,6 +131,9 @@ public partial class MainWindow : Window
     private void AccentBlue_Click(object sender, RoutedEventArgs e) =>
         ApplyAccentColor(Color.FromRgb(38, 139, 255));
 
+    private void AccentRed_Click(object sender, RoutedEventArgs e) =>
+        ApplyAccentColor(Color.FromRgb(229, 57, 53));
+
     private void ApplyAccentColor(Color color)
     {
         currentAccentColor = color;
