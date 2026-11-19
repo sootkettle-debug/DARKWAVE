@@ -2,7 +2,7 @@ name: Build and release DARKWAVE for Windows
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, darkwave-plus ]
   workflow_dispatch:
 
 permissions:
