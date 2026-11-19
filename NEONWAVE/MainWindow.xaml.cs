@@ -78,6 +78,7 @@ public partial class MainWindow : Window
     private double? muteRestoreVolume;
     private bool advanceQueued;
     private double expandedWindowHeight;
+    private bool restoringPlayingTrackView;
     private Color currentAccentColor = Color.FromRgb(0, 184, 76);
     private SolidColorBrush currentAccentBrush = new(Color.FromRgb(0, 184, 76));
 
@@ -267,6 +268,53 @@ public partial class MainWindow : Window
         LibraryTitle.Visibility = expand ? Visibility.Visible : Visibility.Collapsed;
         LibraryToggleText.Text = expand ? "CLOSE LIBRARY" : "OPEN LIBRARY";
         LibraryToggleButton.Content = expand ? "−" : "+";
+
+        if (expand)
+            Dispatcher.BeginInvoke(DispatcherPriority.Loaded,
+                new Action(ShowLoadedTrackInLibrary));
+    }
+
+    private void ShowLoadedTrackInLibrary()
+    {
+        if (LibraryContent.Visibility != Visibility.Visible || reader == null ||
+            currentIndex < 0 || currentIndex >= activeTracks.Count) return;
+
+        var track = activeTracks[currentIndex];
+        if (!FolderTracks.Items.Contains(track))
+        {
+            // Find the currently loaded audio without replacing the playback queue.
+            var folder = folders.FirstOrDefault(f => f.Tracks.Contains(track));
+            var playlist = folder == null
+                ? playlists.FirstOrDefault(p => p.Tracks.Contains(track))
+                : null;
+            if (folder == null && playlist == null) return;
+
+            restoringPlayingTrackView = true;
+            try
+            {
+                if (folder != null)
+                {
+                    PlaylistList.SelectedItem = null;
+                    FolderList.SelectedItem = folder;
+                    FolderTracks.ItemsSource = folder.Tracks;
+                    FolderContentsTitle.Text = $"TRACKS  •  {folder.Name.ToUpperInvariant()}";
+                }
+                else if (playlist != null)
+                {
+                    FolderList.SelectedItem = null;
+                    PlaylistList.SelectedItem = playlist;
+                    FolderTracks.ItemsSource = playlist.Tracks;
+                    FolderContentsTitle.Text = $"TRACKS  •  {playlist.Name.ToUpperInvariant()}";
+                }
+            }
+            finally
+            {
+                restoringPlayingTrackView = false;
+            }
+        }
+
+        FolderTracks.SelectedItem = track;
+        FolderTracks.ScrollIntoView(track);
     }
 
     private MusicFolder GetOrCreateFolder(string folderPath, string? displayName = null)
@@ -386,6 +434,7 @@ public partial class MainWindow : Window
 
     private void FolderList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (restoringPlayingTrackView) return;
         if (FolderList.SelectedItem is MusicFolder folder)
             ShowFolder(folder);
     }
@@ -402,6 +451,7 @@ public partial class MainWindow : Window
 
     private void PlaylistList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (restoringPlayingTrackView) return;
         if (PlaylistList.SelectedItem is MusicPlaylist playlist)
             ShowPlaylist(playlist);
     }
