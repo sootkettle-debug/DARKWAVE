@@ -87,6 +87,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        // Shift only the initial desktop position of the entire window; preserve its size and inner layout.
+        SourceInitialized += (_, _) => Top += 80; // 40% of the 200px upper section
         UpdateVolumeControl();
         UpdateEqKnobs();
         expandedWindowHeight = Height;
