@@ -26,11 +26,11 @@ jobs:
         run: dotnet restore NEONWAVE/NEONWAVE.csproj
       - name: Publish standalone x64 app
         run: dotnet publish NEONWAVE/NEONWAVE.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish
-      - name: Upload DARKWAVE.exe
+      - name: Upload DARKWAVE+ executable
         uses: actions/upload-artifact@v4
         with:
-          name: DARKWAVE-Windows-x64
-          path: publish/DARKWAVE.exe
+          name: DARKWAVE-Plus-Windows-x64
+          path: publish/DARKWAVE+.exe
           if-no-files-found: error
           retention-days: 30
 
