@@ -631,7 +631,7 @@ public partial class MainWindow : Window
         }
         if (MuteButton != null)
         {
-            MuteButton.Content = muteRestoreVolume.HasValue ? "🔊" : "🔇";
+            MuteButton.Content = muteRestoreVolume.HasValue ? "UNMUTE" : "MUTE";
             MuteButton.ToolTip = muteRestoreVolume.HasValue ? "Restore volume" : "Mute";
         }
     }
