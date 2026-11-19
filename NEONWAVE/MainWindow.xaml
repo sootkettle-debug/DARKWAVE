@@ -36,7 +36,7 @@
 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="172"/></Grid.ColumnDefinitions>
 <StackPanel Grid.Column="0" Margin="0,0,10,0">
 <Grid Height="100">
-<TextBlock Text="NOW PLAYING" Foreground="#B6C9BA" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+<TextBlock Text="NOW PLAYING" Foreground="#B6C9BA" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
 
 </Grid>
 <TextBlock x:Name="TrackTitle" Text="No track loaded" Foreground="#62696B" FontSize="21" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Margin="0,10,0,0"/>
