@@ -86,7 +86,7 @@
  </TextBlock>
  </Grid>
  <Grid VerticalAlignment="Center" Margin="4,0,0,0">
- <TextBlock Text="+" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="39.6" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top">
+ <TextBlock Text="+" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="58" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top">
   <TextBlock.Foreground>
    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
     <GradientStop Color="#A7B1B6" Offset="0.00"/>
@@ -100,7 +100,7 @@
   <TextBlock.Effect><DropShadowEffect BlurRadius="7" ShadowDepth="1" Opacity="0.45" Color="#000000"/></TextBlock.Effect>
  </TextBlock>
  <!-- Polished-glass highlight, fading into the black surface. -->
- <TextBlock Text="+" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="39.6" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top" Opacity="0.22" Margin="0,-1,0,0">
+ <TextBlock Text="+" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="58" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top" Opacity="0.22" Margin="0,-1,0,0">
   <TextBlock.Foreground>
    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
     <GradientStop Color="#FFFFFF" Offset="0.00"/>
@@ -112,7 +112,7 @@
   </TextBlock.Foreground>
  </TextBlock>
  <!-- Subtle lower reflection, without the previous hard outline. -->
- <TextBlock Text="+" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="39.6" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top" Opacity="0.10" Margin="0,2,0,0">
+ <TextBlock Text="+" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="58" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top" Opacity="0.10" Margin="0,2,0,0">
   <TextBlock.Foreground>
    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
     <GradientStop Color="#00000000" Offset="0.00"/>
