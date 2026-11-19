@@ -237,6 +237,38 @@
     <GridSplitter Grid.Column="3" Width="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#29213D" ShowsPreview="True" ResizeBehavior="PreviousAndNext"/>
     <Border Grid.Column="4" Background="#0B1012" BorderBrush="#3B4548" BorderThickness="1" CornerRadius="8" Padding="6"><DockPanel><TextBlock x:Name="FolderContentsTitle" DockPanel.Dock="Top" Text="TRACKS" Foreground="#AEB7B9" FontSize="10" FontWeight="Bold" Margin="3,2,3,8" HorizontalAlignment="Center"/>
      <ListBox x:Name="FolderTracks" SelectionMode="Extended" MouseDoubleClick="FolderTracks_MouseDoubleClick" Background="Transparent" BorderThickness="0" Padding="2">
+      <ListBox.Resources>
+       <!-- Glossy black scrollbar for the tracks pane only. -->
+       <Style TargetType="ScrollBar">
+        <Setter Property="Width" Value="13"/>
+        <Setter Property="Background" Value="#070A0D"/>
+        <Setter Property="Template">
+         <Setter.Value>
+          <ControlTemplate TargetType="ScrollBar">
+           <Grid Width="13" Background="#070A0D">
+            <Border Margin="3,2" CornerRadius="4" BorderBrush="#354146" BorderThickness="1">
+             <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,0"><GradientStop Color="#222B2F" Offset="0"/><GradientStop Color="#080C0E" Offset="0.5"/><GradientStop Color="#171E21" Offset="1"/></LinearGradientBrush></Border.Background>
+            </Border>
+            <Track x:Name="PART_Track" IsDirectionReversed="True">
+             <Track.Thumb>
+              <Thumb>
+               <Thumb.Template>
+                <ControlTemplate TargetType="Thumb">
+                 <Border Margin="1,1" CornerRadius="5" BorderBrush="#748187" BorderThickness="1">
+                  <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,0"><GradientStop Color="#5B686D" Offset="0"/><GradientStop Color="#323D42" Offset="0.18"/><GradientStop Color="#090D10" Offset="0.55"/><GradientStop Color="#293338" Offset="0.88"/><GradientStop Color="#465256" Offset="1"/></LinearGradientBrush></Border.Background>
+                  <Border.Effect><DropShadowEffect Color="#000000" BlurRadius="5" ShadowDepth="1" Opacity="0.85"/></Border.Effect>
+                 </Border>
+                </ControlTemplate>
+               </Thumb.Template>
+              </Thumb>
+             </Track.Thumb>
+            </Track>
+           </Grid>
+          </ControlTemplate>
+         </Setter.Value>
+        </Setter>
+       </Style>
+      </ListBox.Resources>
       <ListBox.ItemTemplate><DataTemplate><Grid Margin="5,0.75"><Grid.ColumnDefinitions><ColumnDefinition Width="20"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><Border x:Name="PlayingDot" Width="10" Height="10" CornerRadius="5" Background="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"><Border.Effect><DropShadowEffect Color="{DynamicResource AccentColor}" BlurRadius="12" ShadowDepth="0" Opacity="1"/></Border.Effect><Border.Style><Style TargetType="Border"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsPlaying}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></Border.Style><Border.Triggers><EventTrigger RoutedEvent="FrameworkElement.Loaded"><BeginStoryboard><Storyboard><DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.35" To="1" Duration="0:0:1.2" AutoReverse="True" RepeatBehavior="Forever"/></Storyboard></BeginStoryboard></EventTrigger></Border.Triggers></Border><TextBlock Grid.Column="1" Text="{Binding DisplayName}" Foreground="{DynamicResource AccentBrush}" FontSize="12" FontWeight="Normal" TextTrimming="CharacterEllipsis"><TextBlock.Effect><DropShadowEffect Color="#0D5A2A" BlurRadius="4" ShadowDepth="0" Opacity="0.45"/></TextBlock.Effect></TextBlock></Grid></DataTemplate></ListBox.ItemTemplate>
       <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/><Setter Property="Background" Value="Transparent"/><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0,0.25"/><Setter Property="BorderThickness" Value="0"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ListBoxItem"><Border x:Name="TrackRow" Background="#101619" BorderBrush="#263238" BorderThickness="1" CornerRadius="4"><ContentPresenter/></Border><ControlTemplate.Triggers><Trigger Property="IsSelected" Value="True"><Setter TargetName="TrackRow" Property="Background" Value="#30383D"/><Setter TargetName="TrackRow" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/></Trigger><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="TrackRow" Property="BorderBrush" Value="#748084"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style></ListBox.ItemContainerStyle>
      </ListBox></DockPanel></Border>
