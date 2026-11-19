@@ -94,6 +94,11 @@ public partial class MainWindow : Window
             var workArea = SystemParameters.WorkArea;
             var freeSpaceBelow = Math.Max(0, workArea.Bottom - (Top + ActualHeight));
             Top += freeSpaceBelow * 0.40;
+            // Lower only the native title bar and upper pane border by 28px.
+            // Remove the same height from the top rather than shifting playback or library controls.
+            Top += 28;
+            Height = Math.Max(MinHeight, Height - 28);
+            expandedWindowHeight = Height;
         }), DispatcherPriority.ApplicationIdle);
         UpdateVolumeControl();
         UpdateEqKnobs();
