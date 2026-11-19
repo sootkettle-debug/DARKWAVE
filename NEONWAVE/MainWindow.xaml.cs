@@ -649,7 +649,7 @@ public partial class MainWindow : Window
             DimButton.Content = dimRestoreVolume.HasValue ? "DIM ON" : "DIM";
             DimButton.ToolTip = dimRestoreVolume.HasValue
                 ? "Restore the volume before DIM"
-                : "Lower volume to 20%";
+                : "Lower volume to 10%";
         }
         if (MuteButton != null)
         {
@@ -670,7 +670,7 @@ public partial class MainWindow : Window
         {
             dimRestoreVolume = muteRestoreVolume ?? volumePercent;
             muteRestoreVolume = null;
-            SetVolume(20);
+            SetVolume(10);
         }
     }
 
