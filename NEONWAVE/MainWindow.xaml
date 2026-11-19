@@ -23,6 +23,57 @@
    <Setter Property="Foreground" Value="#263238"/><Setter Property="Background" Value="#11171A"/><Setter Property="Height" Value="20"/>
    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Slider"><Grid VerticalAlignment="Center" Height="20"><Track x:Name="PART_Track" IsDirectionReversed="{TemplateBinding IsDirectionReversed}"><Track.DecreaseRepeatButton><RepeatButton Command="Slider.DecreaseLarge" IsTabStop="False" Focusable="False" Height="5" VerticalAlignment="Center" Background="#263238" BorderThickness="0"><RepeatButton.Template><ControlTemplate TargetType="RepeatButton"><Border Background="{TemplateBinding Background}" CornerRadius="0"/></ControlTemplate></RepeatButton.Template></RepeatButton></Track.DecreaseRepeatButton><Track.Thumb><Thumb Width="13" Height="13" Focusable="False"><Thumb.Template><ControlTemplate TargetType="Thumb"><Border Background="#1B2528" BorderBrush="#A8B9B2" BorderThickness="1" CornerRadius="0"><Border.Effect><DropShadowEffect Color="#84978E" BlurRadius="8" ShadowDepth="0" Opacity="0.95"/></Border.Effect></Border></ControlTemplate></Thumb.Template></Thumb></Track.Thumb><Track.IncreaseRepeatButton><RepeatButton Command="Slider.IncreaseLarge" IsTabStop="False" Focusable="False" Height="5" VerticalAlignment="Center" Background="#11171A" BorderThickness="0"><RepeatButton.Template><ControlTemplate TargetType="RepeatButton"><Border Background="{TemplateBinding Background}" CornerRadius="0"/></ControlTemplate></RepeatButton.Template></RepeatButton></Track.IncreaseRepeatButton></Track></Grid></ControlTemplate></Setter.Value></Setter>
   </Style>
+  <!-- Glossy seek track: black glass for unplayed audio; live accent brush for played portion. -->
+  <Style x:Key="GlossySeekSliderStyle" TargetType="Slider">
+   <Setter Property="Height" Value="20"/>
+   <Setter Property="Template">
+    <Setter.Value>
+     <ControlTemplate TargetType="Slider">
+      <Grid Height="20" VerticalAlignment="Center">
+       <Track x:Name="PART_Track" IsDirectionReversed="{TemplateBinding IsDirectionReversed}">
+        <Track.DecreaseRepeatButton>
+         <RepeatButton Command="Slider.DecreaseLarge" IsTabStop="False" Focusable="False" Height="8" VerticalAlignment="Center">
+          <RepeatButton.Template>
+           <ControlTemplate TargetType="RepeatButton">
+            <Grid>
+             <Border CornerRadius="4" Background="{DynamicResource AccentBrush}"/>
+             <Border CornerRadius="4" BorderBrush="#80FFFFFF" BorderThickness="0,1,0,0" Opacity="0.35">
+              <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#AAFFFFFF" Offset="0"/><GradientStop Color="#00FFFFFF" Offset="0.5"/><GradientStop Color="#55000000" Offset="1"/></LinearGradientBrush></Border.Background>
+             </Border>
+            </Grid>
+           </ControlTemplate>
+          </RepeatButton.Template>
+         </RepeatButton>
+        </Track.DecreaseRepeatButton>
+        <Track.Thumb>
+         <Thumb Width="14" Height="14" Focusable="False">
+          <Thumb.Template>
+           <ControlTemplate TargetType="Thumb">
+            <Ellipse Stroke="#849499" StrokeThickness="1">
+             <Ellipse.Fill><RadialGradientBrush Center="0.3,0.2" GradientOrigin="0.3,0.2"><GradientStop Color="#576267" Offset="0"/><GradientStop Color="#252C30" Offset="0.3"/><GradientStop Color="#06090B" Offset="1"/></RadialGradientBrush></Ellipse.Fill>
+             <Ellipse.Effect><DropShadowEffect Color="#000000" BlurRadius="5" ShadowDepth="1" Opacity="0.8"/></Ellipse.Effect>
+            </Ellipse>
+           </ControlTemplate>
+          </Thumb.Template>
+         </Thumb>
+        </Track.Thumb>
+        <Track.IncreaseRepeatButton>
+         <RepeatButton Command="Slider.IncreaseLarge" IsTabStop="False" Focusable="False" Height="8" VerticalAlignment="Center">
+          <RepeatButton.Template>
+           <ControlTemplate TargetType="RepeatButton">
+            <Border CornerRadius="4" BorderBrush="#526065" BorderThickness="0,1,0,1">
+             <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#465156" Offset="0"/><GradientStop Color="#20292D" Offset="0.23"/><GradientStop Color="#070A0C" Offset="0.64"/><GradientStop Color="#171D20" Offset="1"/></LinearGradientBrush></Border.Background>
+            </Border>
+           </ControlTemplate>
+          </RepeatButton.Template>
+         </RepeatButton>
+        </Track.IncreaseRepeatButton>
+       </Track>
+      </Grid>
+     </ControlTemplate>
+    </Setter.Value>
+   </Setter>
+  </Style>
   <Style TargetType="Button">
    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/><Setter Property="Background" Value="#252C2F"/><Setter Property="BorderBrush" Value="#748084"/><Setter Property="BorderThickness" Value="1"/><Setter Property="Padding" Value="7,6"/><Setter Property="FontSize" Value="9"/><Setter Property="HorizontalContentAlignment" Value="Center"/><Setter Property="Margin" Value="3,0"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Cursor" Value="Hand"/>
    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button"><Grid><Border x:Name="Face" CornerRadius="9" BorderThickness="1" BorderBrush="#748084"><Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#566164" Offset="0"/><GradientStop Color="#343E41" Offset="0.18"/><GradientStop Color="#171D20" Offset="0.52"/><GradientStop Color="#30393C" Offset="1"/></LinearGradientBrush></Border.Background><Border.Effect><DropShadowEffect Color="#000000" BlurRadius="5" ShadowDepth="2" Opacity="0.85"/></Border.Effect></Border><Border Margin="2" CornerRadius="7" BorderThickness="1" BorderBrush="#263034" IsHitTestVisible="False"/><ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" TextElement.Foreground="{TemplateBinding Foreground}" RecognizesAccessKey="True"/></Grid><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Face" Property="BorderBrush" Value="#C4D0C9"/></Trigger><Trigger Property="IsPressed" Value="True"><Setter TargetName="Face" Property="Opacity" Value="0.78"/></Trigger><Trigger Property="IsEnabled" Value="False"><Setter TargetName="Face" Property="Opacity" Value="0.45"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter>
@@ -125,7 +176,7 @@
  </TextBlock>
  </Grid>
 </StackPanel>
-</Grid><Grid Grid.Row="1" Margin="0,10,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock x:Name="ElapsedText" Text="0:00" Foreground="#9AA8A4" FontSize="10" VerticalAlignment="Center"/><Slider x:Name="SeekSlider" Grid.Column="1" Minimum="0" Maximum="100" Value="0" Margin="12,0" VerticalAlignment="Center" Foreground="#263238" Background="#11171A" ValueChanged="SeekSlider_ValueChanged" PreviewMouseLeftButtonDown="SeekSlider_MouseDown" PreviewMouseLeftButtonUp="SeekSlider_MouseUp"/><TextBlock x:Name="DurationText" Grid.Column="2" Text="0:00" Foreground="#9AA8A4" FontSize="10" VerticalAlignment="Center"/></Grid><Border x:Name="PlaybackControlsPanel" Grid.Row="2" Background="#171D20" BorderBrush="#485257" BorderThickness="1" CornerRadius="10" Padding="10" Margin="0,12,0,0"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="344"/><ColumnDefinition Width="*" MinWidth="289"/></Grid.ColumnDefinitions><TextBlock x:Name="ReadyStatusText" Text="Darkwave - Ready to play" Foreground="#B6C6BE" FontFamily="Segoe Script" FontStyle="Italic" FontSize="13" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,9" TextTrimming="CharacterEllipsis"/><StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,3"><StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,6"><StackPanel Width="58" HorizontalAlignment="Center" ToolTip="L EQ: drag up/down or scroll to adjust (-12 to +12 dB)">
+</Grid><Grid Grid.Row="1" Margin="0,10,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock x:Name="ElapsedText" Text="0:00" Foreground="#9AA8A4" FontSize="10" VerticalAlignment="Center"/><Slider x:Name="SeekSlider" Style="{StaticResource GlossySeekSliderStyle}" Grid.Column="1" Minimum="0" Maximum="100" Value="0" Margin="12,0" VerticalAlignment="Center" Foreground="#263238" Background="#11171A" ValueChanged="SeekSlider_ValueChanged" PreviewMouseLeftButtonDown="SeekSlider_MouseDown" PreviewMouseLeftButtonUp="SeekSlider_MouseUp"/><TextBlock x:Name="DurationText" Grid.Column="2" Text="0:00" Foreground="#9AA8A4" FontSize="10" VerticalAlignment="Center"/></Grid><Border x:Name="PlaybackControlsPanel" Grid.Row="2" Background="#171D20" BorderBrush="#485257" BorderThickness="1" CornerRadius="10" Padding="10" Margin="0,12,0,0"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="344"/><ColumnDefinition Width="*" MinWidth="289"/></Grid.ColumnDefinitions><TextBlock x:Name="ReadyStatusText" Text="Darkwave - Ready to play" Foreground="#B6C6BE" FontFamily="Segoe Script" FontStyle="Italic" FontSize="13" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,9" TextTrimming="CharacterEllipsis"/><StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,3"><StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,6"><StackPanel Width="58" HorizontalAlignment="Center" ToolTip="L EQ: drag up/down or scroll to adjust (-12 to +12 dB)">
 <TextBlock Text="L" FontWeight="Bold" FontSize="9" Foreground="{DynamicResource AccentBrush}" TextAlignment="Center" Margin="0,0,0,1"/>
 <Grid x:Name="EqKnob0" Tag="0" Width="41" Height="41" HorizontalAlignment="Center" Background="Transparent" Cursor="Hand" MouseLeftButtonDown="EqKnob_MouseDown" MouseMove="EqKnob_MouseMove" MouseLeftButtonUp="EqKnob_MouseUp" LostMouseCapture="EqKnob_LostMouseCapture" MouseWheel="EqKnob_MouseWheel">
 <Ellipse Margin="3.5" Stroke="#788487" StrokeThickness="1"><Ellipse.Fill><RadialGradientBrush Center="0.3,0.24" GradientOrigin="0.3,0.24"><GradientStop Color="#4B5658" Offset="0"/><GradientStop Color="#1B2225" Offset="0.65"/><GradientStop Color="#060A0D" Offset="1"/></RadialGradientBrush></Ellipse.Fill><Ellipse.Effect><DropShadowEffect BlurRadius="4" Color="#000000" ShadowDepth="1" Opacity="0.9"/></Ellipse.Effect></Ellipse>
