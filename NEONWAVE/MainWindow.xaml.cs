@@ -1,5 +1,6 @@
 using Microsoft.Win32;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -60,6 +61,11 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer timer = new() { Interval = TimeSpan.FromMilliseconds(200) };
     private List<Track> activeTracks = new();
     private AudioFileReader? reader;
+    private FiveBandEqualizer? equalizer;
+    private readonly double[] eqGainDb = new double[5];
+    private int eqDraggingBand = -1;
+    private double eqDragStartY;
+    private double eqDragStartGain;
     private WaveOutEvent? output;
     private bool changingSeek;
     private bool draggingSeek;
@@ -82,6 +88,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         UpdateVolumeControl();
+        UpdateEqKnobs();
         expandedWindowHeight = Height;
         ApplyAccentColor(Color.FromRgb(0, 184, 76));
         // Re-apply accents as WPF creates template content and virtualized list rows.
@@ -478,9 +485,10 @@ public partial class MainWindow : Window
             reader = new AudioFileReader(track.Path) { Volume = (float)(volumePercent / 100.0) };
 
             var playbackReader = reader;
+            equalizer = new FiveBandEqualizer(playbackReader, eqGainDb);
             var playbackOutput = new WaveOutEvent();
             output = playbackOutput;
-            playbackOutput.Init(playbackReader);
+            playbackOutput.Init(new SampleToWaveProvider(equalizer));
             playbackOutput.PlaybackStopped += (_, args) =>
             {
                 if (args.Exception != null) return;
@@ -549,6 +557,7 @@ public partial class MainWindow : Window
         }
         reader?.Dispose();
         reader = null;
+        equalizer = null;
     }
 
     private void TryAdvanceEndedTrack(WaveOutEvent expectedOutput, AudioFileReader expectedReader)
@@ -696,6 +705,70 @@ public partial class MainWindow : Window
     private void VolumeKnob_MouseWheel(object sender, MouseWheelEventArgs e)
     {
         SetVolume(volumePercent + Math.Sign(e.Delta) * 2, true);
+        e.Handled = true;
+    }
+
+    // EQ bands: 80 Hz, 250 Hz, 1 kHz, 4 kHz, and 12 kHz.
+    // The straight-up pointer denotes neutral (0 dB).
+    private void UpdateEqKnobs()
+    {
+        var rotations = new[]
+        {
+            EqKnobRotation0, EqKnobRotation1, EqKnobRotation2,
+            EqKnobRotation3, EqKnobRotation4
+        };
+        var knobs = new[] { EqKnob0, EqKnob1, EqKnob2, EqKnob3, EqKnob4 };
+        for (int i = 0; i < eqGainDb.Length; i++)
+        {
+            rotations[i].Angle = eqGainDb[i] / 12.0 * 135.0;
+            knobs[i].ToolTip = $"EQ {new[] { "L", "LM", "M", "HM", "H" }[i]}: {eqGainDb[i]:+0;-0;0} dB (drag up/down or scroll)";
+        }
+    }
+
+    private void SetEqGain(int band, double gainDb)
+    {
+        if (band < 0 || band >= eqGainDb.Length) return;
+        eqGainDb[band] = Math.Clamp(Math.Round(gainDb, 1), -12, 12);
+        equalizer?.SetGain(band, eqGainDb[band]);
+        UpdateEqKnobs();
+    }
+
+    private void EqKnob_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is not Grid knob || !int.TryParse(knob.Tag?.ToString(), out int band))
+            return;
+        eqDraggingBand = band;
+        eqDragStartY = e.GetPosition(this).Y;
+        eqDragStartGain = eqGainDb[band];
+        if (!knob.CaptureMouse()) eqDraggingBand = -1;
+        e.Handled = true;
+    }
+
+    private void EqKnob_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (sender is not Grid knob || !int.TryParse(knob.Tag?.ToString(), out int band) ||
+            eqDraggingBand != band || e.LeftButton != MouseButtonState.Pressed) return;
+        // The same three-pixels-per-step gesture as the main volume knob.
+        SetEqGain(band, eqDragStartGain + (eqDragStartY - e.GetPosition(this).Y) / 3.0);
+        e.Handled = true;
+    }
+
+    private void EqKnob_MouseUp(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is not Grid knob) return;
+        eqDraggingBand = -1;
+        if (knob.IsMouseCaptured) knob.ReleaseMouseCapture();
+        e.Handled = true;
+    }
+
+    private void EqKnob_LostMouseCapture(object sender, MouseEventArgs e) =>
+        eqDraggingBand = -1;
+
+    private void EqKnob_MouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (sender is not Grid knob || !int.TryParse(knob.Tag?.ToString(), out int band))
+            return;
+        SetEqGain(band, eqGainDb[band] + Math.Sign(e.Delta));
         e.Handled = true;
     }
 
