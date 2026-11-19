@@ -225,7 +225,7 @@
 </Grid>
 <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0,0,1,0">
  <Border Height="24" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="5" Background="#07110C" Margin="0,0,0,3" Padding="0"><TextBlock x:Name="VolumeText" Text="80%" Foreground="{DynamicResource AccentBrush}" FontSize="12" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center"/></Border>
- <Button x:Name="DimButton" Content="DIM" Click="Dim_Click" ToolTip="Lower to 20%; click again to restore previous volume" Height="23" FontSize="12" Margin="0,0,0,3" Padding="0"/>
+ <Button x:Name="DimButton" Content="DIM" Click="Dim_Click" ToolTip="Lower to 10%; click again to restore previous volume" Height="23" FontSize="12" Margin="0,0,0,3" Padding="0"/>
  <Button x:Name="MuteButton" Content="MUTE" Click="Mute_Click" ToolTip="Mute / restore volume" Height="23" FontSize="10" Margin="0" Padding="0"/>
 </StackPanel>
 </Grid></Grid></Grid></Grid></Border></Grid></Border>
