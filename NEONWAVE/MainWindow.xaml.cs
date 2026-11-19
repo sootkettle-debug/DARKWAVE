@@ -64,6 +64,12 @@ public partial class MainWindow : Window
     private bool changingSeek;
     private bool draggingSeek;
     private int currentIndex = -1;
+    private double volumePercent = 80;
+    private double knobDragStartY;
+    private double knobDragStartVolume;
+    private bool knobDragging;
+    private double? dimRestoreVolume;
+    private double? muteRestoreVolume;
     private bool advanceQueued;
     private double expandedWindowHeight;
     private Color currentAccentColor = Color.FromRgb(0, 184, 76);
@@ -75,6 +81,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        UpdateVolumeControl();
         expandedWindowHeight = Height;
         ApplyAccentColor(Color.FromRgb(0, 184, 76));
         // Re-apply accents as WPF creates template content and virtualized list rows.
@@ -468,7 +475,7 @@ public partial class MainWindow : Window
                 Dispatcher.BeginInvoke(DispatcherPriority.Loaded,
                     new Action(() => FolderTracks.ScrollIntoView(track)));
             }
-            reader = new AudioFileReader(track.Path) { Volume = (float)(VolumeSlider.Value / 100.0) };
+            reader = new AudioFileReader(track.Path) { Volume = (float)(volumePercent / 100.0) };
 
             var playbackReader = reader;
             var playbackOutput = new WaveOutEvent();
@@ -597,10 +604,99 @@ public partial class MainWindow : Window
         draggingSeek = false;
     }
 
-    private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    private void SetVolume(double value, bool manual = false)
     {
-        if (VolumeText != null) VolumeText.Text = $"{(int)VolumeSlider.Value}%";
-        if (reader != null) reader.Volume = (float)(VolumeSlider.Value / 100.0);
+        volumePercent = Math.Clamp(Math.Round(value), 0, 100);
+        if (manual)
+        {
+            dimRestoreVolume = null;
+            muteRestoreVolume = null;
+        }
+        UpdateVolumeControl();
+    }
+
+    private void UpdateVolumeControl()
+    {
+        if (VolumeText == null || VolumeKnobRotation == null) return;
+        VolumeText.Text = $"{volumePercent:0}%";
+        // The indicator stops at the two endpoint dots.
+        VolumeKnobRotation.Angle = -135 + volumePercent * 2.7;
+        if (reader != null) reader.Volume = (float)(volumePercent / 100.0);
+        if (DimButton != null)
+        {
+            DimButton.Content = dimRestoreVolume.HasValue ? "DIM ON" : "DIM";
+            DimButton.ToolTip = dimRestoreVolume.HasValue
+                ? "Restore the volume before DIM"
+                : "Lower volume to 20%";
+        }
+        if (MuteButton != null)
+        {
+            MuteButton.Content = muteRestoreVolume.HasValue ? "🔊" : "🔇";
+            MuteButton.ToolTip = muteRestoreVolume.HasValue ? "Restore volume" : "Mute";
+        }
+    }
+
+    private void Dim_Click(object sender, RoutedEventArgs e)
+    {
+        if (dimRestoreVolume.HasValue)
+        {
+            var restore = dimRestoreVolume.Value;
+            dimRestoreVolume = null;
+            SetVolume(restore);
+        }
+        else
+        {
+            dimRestoreVolume = muteRestoreVolume ?? volumePercent;
+            muteRestoreVolume = null;
+            SetVolume(20);
+        }
+    }
+
+    private void Mute_Click(object sender, RoutedEventArgs e)
+    {
+        if (muteRestoreVolume.HasValue)
+        {
+            var restore = muteRestoreVolume.Value;
+            muteRestoreVolume = null;
+            SetVolume(restore);
+        }
+        else
+        {
+            muteRestoreVolume = volumePercent;
+            SetVolume(0);
+        }
+    }
+
+    private void VolumeKnob_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        knobDragStartY = e.GetPosition(this).Y;
+        knobDragStartVolume = volumePercent;
+        knobDragging = VolumeKnob.CaptureMouse();
+        e.Handled = true;
+    }
+
+    private void VolumeKnob_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (!knobDragging || e.LeftButton != MouseButtonState.Pressed) return;
+        // Every three vertical pixels adjusts the volume by one percent.
+        SetVolume(knobDragStartVolume + (knobDragStartY - e.GetPosition(this).Y) / 3, true);
+        e.Handled = true;
+    }
+
+    private void VolumeKnob_MouseUp(object sender, MouseButtonEventArgs e)
+    {
+        knobDragging = false;
+        VolumeKnob.ReleaseMouseCapture();
+        e.Handled = true;
+    }
+
+    private void VolumeKnob_LostMouseCapture(object sender, MouseEventArgs e) =>
+        knobDragging = false;
+
+    private void VolumeKnob_MouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        SetVolume(volumePercent + Math.Sign(e.Delta) * 2, true);
+        e.Handled = true;
     }
 
     private void Remove_Click(object sender, RoutedEventArgs e)
