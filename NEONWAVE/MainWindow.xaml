@@ -35,19 +35,9 @@
   <Border Grid.Row="0" Background="#20272A" BorderBrush="#657176" BorderThickness="1" CornerRadius="4" Padding="16,4,16,16" Margin="0,0,0,14"><Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><Grid Grid.Row="0">
 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="172"/></Grid.ColumnDefinitions>
 <StackPanel Grid.Column="0" Margin="0,0,10,0">
-<Grid Height="58">
+<Grid Height="100">
 <TextBlock Text="NOW PLAYING" Foreground="#B6C9BA" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-<Grid HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="44" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="-1,0,0,0"/>
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="44" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="1,0,0,0"/>
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="44" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0"/>
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="44" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,1,0,0"/>
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="44" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="-1,-1,0,0"/>
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="44" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="1,-1,0,0"/>
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="44" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="-1,1,0,0"/>
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="44" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="1,1,0,0"/>
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="44" FontWeight="Normal" Foreground="#000000" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0"/>
-</Grid>
+
 </Grid>
 <TextBlock x:Name="TrackTitle" Text="No track loaded" Foreground="#62696B" FontSize="21" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Margin="0,10,0,0"/>
 <TextBlock x:Name="TrackInfo" Text="Add an audio folder or drop music files here" Foreground="#9AA8A4" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
@@ -56,6 +46,17 @@
  <Image Width="76" Height="76" Source="/Assets/DarkwaveLogo.png" Stretch="Uniform" Margin="0,0,10,0"/>
  <Border Width="76" Height="76" CornerRadius="3" Background="#0B1012" BorderBrush="#C7D8C7" BorderThickness="1"><Viewbox><TextBlock Text="♫" Foreground="#C7D8C7" FontSize="44"/></Viewbox></Border>
 </StackPanel>
+<Grid Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" IsHitTestVisible="False">
+ <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="-1,0,0,0"/>
+ <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="1,0,0,0"/>
+ <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-1,0,0"/>
+ <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,1,0,0"/>
+ <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="-1,-1,0,0"/>
+ <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="1,-1,0,0"/>
+ <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="-1,1,0,0"/>
+ <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" Foreground="#858B8D" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="1,1,0,0"/>
+ <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" FontWeight="Normal" Foreground="#000000" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0"/>
+</Grid>
 </Grid><Grid Grid.Row="1" Margin="0,10,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock x:Name="ElapsedText" Text="0:00" Foreground="#9AA8A4" FontSize="10" VerticalAlignment="Center"/><Slider x:Name="SeekSlider" Grid.Column="1" Minimum="0" Maximum="100" Value="0" Margin="12,0" VerticalAlignment="Center" Foreground="#263238" Background="#11171A" ValueChanged="SeekSlider_ValueChanged" PreviewMouseLeftButtonDown="SeekSlider_MouseDown" PreviewMouseLeftButtonUp="SeekSlider_MouseUp"/><TextBlock x:Name="DurationText" Grid.Column="2" Text="0:00" Foreground="#9AA8A4" FontSize="10" VerticalAlignment="Center"/></Grid><Border x:Name="PlaybackControlsPanel" Grid.Row="2" Background="#171D20" BorderBrush="#485257" BorderThickness="1" CornerRadius="10" Padding="10" Margin="0,12,0,0"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" MinWidth="293"/><ColumnDefinition Width="344"/><ColumnDefinition Width="*" MinWidth="293"/></Grid.ColumnDefinitions><TextBlock x:Name="ReadyStatusText" Text="Darkwave - Ready to play" Foreground="#B6C6BE" FontFamily="Segoe Script" FontStyle="Italic" FontSize="13" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,9" TextTrimming="CharacterEllipsis"/><StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,3"><StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,6"><StackPanel Width="58" HorizontalAlignment="Center" ToolTip="L EQ: drag up/down or scroll to adjust (-12 to +12 dB)">
 <TextBlock Text="L" FontWeight="Bold" FontSize="9" Foreground="{DynamicResource AccentBrush}" TextAlignment="Center" Margin="0,0,0,1"/>
 <Grid x:Name="EqKnob0" Tag="0" Width="41" Height="41" HorizontalAlignment="Center" Background="Transparent" Cursor="Hand" MouseLeftButtonDown="EqKnob_MouseDown" MouseMove="EqKnob_MouseMove" MouseLeftButtonUp="EqKnob_MouseUp" LostMouseCapture="EqKnob_LostMouseCapture" MouseWheel="EqKnob_MouseWheel">
