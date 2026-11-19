@@ -87,8 +87,14 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        // Shift only the initial desktop position of the entire window; preserve its size and inner layout.
-        SourceInitialized += (_, _) => Top += 80; // 40% of the 200px upper section
+        // Move the complete window after WPF has finished CenterScreen positioning.
+        // Use 40% of the available space below it, keeping the title bar on screen.
+        Loaded += (_, _) => Dispatcher.BeginInvoke(new Action(() =>
+        {
+            var workArea = SystemParameters.WorkArea;
+            var freeSpaceBelow = Math.Max(0, workArea.Bottom - (Top + ActualHeight));
+            Top += freeSpaceBelow * 0.40;
+        }), DispatcherPriority.ApplicationIdle);
         UpdateVolumeControl();
         UpdateEqKnobs();
         expandedWindowHeight = Height;
