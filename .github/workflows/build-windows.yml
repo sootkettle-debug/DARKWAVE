@@ -85,3 +85,50 @@ jobs:
           This is the first public release. Playback and UI behavior can vary with Windows configuration and audio codecs.
           '@ | Set-Content -Path RELEASE_NOTES.md -Encoding utf8
           gh release create v1.0.0 DARKWAVE-v1.0-Windows-x64.zip --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "DARKWAVE v1.0" --notes-file RELEASE_NOTES.md --latest
+
+  release-plus:
+    name: Publish DARKWAVE+ Windows download
+    if: github.ref == 'refs/heads/darkwave-plus' && contains(github.event.head_commit.message, '[release-plus]')
+    needs: build
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Download the verified DARKWAVE+ executable
+        uses: actions/download-artifact@v4
+        with:
+          name: DARKWAVE-Plus-Windows-x64
+          path: release-files
+      - name: Package standalone Windows executable
+        shell: pwsh
+        run: |
+          Compress-Archive -Path 'release-files/DARKWAVE+.exe' -DestinationPath DARKWAVE-Plus-Windows-x64.zip
+      - name: Publish public DARKWAVE+ release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          @'
+          # DARKWAVE+ — Standalone Windows music player
+
+          Download **DARKWAVE+.exe** directly below, or choose the ZIP archive.
+          Windows 64-bit required. No separate .NET installation is needed.
+
+          DARKWAVE+ combines a glossy dark audio-player interface with Gothic branding, an
+          illuminated segmented LCD-style track display, and five adjustable EQ bands.
+          Features include local music folders, playlists, file drag-and-drop, a progress
+          seek bar, and five selectable accent colors.
+
+          The player starts at 40% volume. DIM lowers audio to 10%, MUTE silences playback,
+          and the LEVEL CAUTION LED indicates the last manually selected knob level:
+          amber at 60–79% and red at 80–100%. This is a volume-setting reminder, not a
+          measurement of actual sound level.
+
+          The current blue-and-black DARKWAVE+ emblem is included in the executable.
+          Supports common local audio formats subject to Windows codec availability.
+
+          This release is built exclusively from the **darkwave-plus** branch and is
+          separate from the original DARKWAVE v1.0.
+          '@ | Set-Content -Path RELEASE_NOTES_PLUS.md -Encoding utf8
+          gh release create darkwave-plus-v1.0.0 'release-files/DARKWAVE+.exe' DARKWAVE-Plus-Windows-x64.zip --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "DARKWAVE+ v1.0.0 — Windows x64" --notes-file RELEASE_NOTES_PLUS.md --latest=false
