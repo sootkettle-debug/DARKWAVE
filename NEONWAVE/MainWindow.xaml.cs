@@ -71,6 +71,8 @@ public partial class MainWindow : Window
     private bool draggingSeek;
     private int currentIndex = -1;
     private double volumePercent = 40;
+    // The warning LED reflects the physical knob setting, not temporary DIM/MUTE levels.
+    private double warningKnobPercent = 40;
     private double knobDragStartY;
     private double knobDragStartVolume;
     private bool knobDragging;
@@ -758,6 +760,7 @@ public partial class MainWindow : Window
         {
             dimRestoreVolume = null;
             muteRestoreVolume = null;
+            warningKnobPercent = volumePercent;
         }
         UpdateVolumeControl();
     }
@@ -768,7 +771,7 @@ public partial class MainWindow : Window
         VolumeText.Text = $"{volumePercent:0}%";
         // The indicator stops at the two endpoint dots.
         VolumeKnobRotation.Angle = -135 + volumePercent * 2.7;
-        UpdateVolumeWarningLed();
+        UpdateVolumeWarningLed(); // DIM/MUTE do not change warningKnobPercent.
         if (reader != null) reader.Volume = (float)(volumePercent / 100.0);
         if (DimButton != null)
         {
@@ -791,8 +794,8 @@ public partial class MainWindow : Window
             VolumeWarningLed.Effect is not DropShadowEffect glow) return;
 
         // Player percentage is only a caution threshold; it is not a decibel measurement.
-        bool amber = volumePercent >= 60 && volumePercent < 80;
-        bool red = volumePercent >= 80;
+        bool amber = warningKnobPercent >= 60 && warningKnobPercent < 80;
+        bool red = warningKnobPercent >= 80;
         Color main = red ? Color.FromRgb(255, 55, 40) :
                      amber ? Color.FromRgb(255, 178, 28) : Color.FromRgb(80, 90, 93);
 
