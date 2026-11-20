@@ -113,6 +113,7 @@ public partial class MainWindow : Window
         Loaded += (_, _) => Dispatcher.BeginInvoke(ApplyAccentToLoadedPanels,
             DispatcherPriority.Loaded);
         Loaded += (_, _) => QueueAccentButtonsAlignment();
+        Loaded += (_, _) => QueueTrackGlassPanelWidth();
         FolderList.ItemsSource = folders;
         PlaylistList.ItemsSource = playlists;
         timer.Tick += (_, _) => UpdateDisplay();
@@ -120,6 +121,32 @@ public partial class MainWindow : Window
         Closed += (_, _) => DisposeAudio();
     }
 
+
+    private void UpperHeaderGrid_SizeChanged(object sender, SizeChangedEventArgs e) =>
+        QueueTrackGlassPanelWidth();
+
+    private void QueueTrackGlassPanelWidth() =>
+        Dispatcher.BeginInvoke(new Action(AlignTrackGlassPanel),
+            DispatcherPriority.Loaded);
+
+    private void AlignTrackGlassPanel()
+    {
+        if (!UpperHeaderGrid.IsLoaded ||
+            LogoPlusMark.ActualWidth <= 0 ||
+            RoundDarkwaveLogo.ActualWidth <= 0) return;
+
+        var plusRight = LogoPlusMark.TranslatePoint(
+            new Point(LogoPlusMark.ActualWidth, 0), UpperHeaderGrid).X;
+        var emblemLeft = RoundDarkwaveLogo.TranslatePoint(
+            new Point(0, 0), UpperHeaderGrid).X;
+        var panelLeft = TrackGlassPanel.TranslatePoint(
+            new Point(0, 0), UpperHeaderGrid).X;
+
+        // Stop the glass panel halfway between the logo's + and the round emblem.
+        var width = Math.Max(180, (plusRight + emblemLeft) / 2 - panelLeft);
+        if (Math.Abs(TrackGlassPanel.ActualWidth - width) > 0.5)
+            TrackGlassPanel.Width = width;
+    }
 
     private void PlaybackControlsPanel_SizeChanged(object sender, SizeChangedEventArgs e) =>
         QueueAccentButtonsAlignment();
@@ -880,7 +907,7 @@ public partial class MainWindow : Window
             {
                 DisposeAudio();
                 PlayButton.Content = "▶";
-                TrackTitle.Text = "No track loaded";
+                TrackTitle.Text = "NO TRACK LOADED";
                 TrackInfo.Text = "Select a track to begin playback";
                 changingSeek = true;
                 SeekSlider.Value = 0;
@@ -907,7 +934,7 @@ public partial class MainWindow : Window
                 FolderContentsTitle.Text = "TRACKS IN SELECTED FOLDER";
                 activeTracks.Clear();
                 currentIndex = -1;
-                TrackTitle.Text = "No track loaded";
+                TrackTitle.Text = "NO TRACK LOADED";
                 TrackInfo.Text = "";
             }
 
@@ -955,7 +982,7 @@ public partial class MainWindow : Window
         {
             DisposeAudio();
             PlayButton.Content = "▶";
-            TrackTitle.Text = "No track loaded";
+            TrackTitle.Text = "NO TRACK LOADED";
             TrackInfo.Text = "Select a track to begin playback";
             changingSeek = true;
             SeekSlider.Value = 0;
@@ -1010,7 +1037,7 @@ public partial class MainWindow : Window
         {
             DisposeAudio();
             PlayButton.Content = "▶";
-            TrackTitle.Text = "No track loaded";
+            TrackTitle.Text = "NO TRACK LOADED";
             TrackInfo.Text = "Select a track to begin playback";
             changingSeek = true;
             SeekSlider.Value = 0;
@@ -1048,7 +1075,7 @@ public partial class MainWindow : Window
         FolderTracks.ItemsSource = null;
         FolderContentsTitle.Text = "TRACKS IN SELECTED FOLDER";
         FolderList.SelectedIndex = -1;
-        TrackTitle.Text = "No track loaded";
+        TrackTitle.Text = "NO TRACK LOADED";
         TrackInfo.Text = "";
         QueueCount.Text = "0 TRACKS  •  ADD A FOLDER TO BEGIN";
         PlayButton.Content = "▶";
