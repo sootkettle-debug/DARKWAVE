@@ -107,14 +107,20 @@
  </Viewbox>
 </Border>
 </StackPanel>
-<!-- Both 100px displays are centred in the header space above the progress bar, with room between them and the glass title. -->
-<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
- <Image x:Name="RoundDarkwaveLogo" Width="100" Height="100" Source="/Assets/DarkwaveLogo.png" Stretch="Uniform" Margin="0,0,12,0"/>
- <Border x:Name="AlbumArtScreen" Width="100" Height="100" CornerRadius="3" Background="#0B1012" BorderBrush="#C7D8C7" BorderThickness="1"><Viewbox><TextBlock Text="♫" Foreground="#C7D8C7" FontSize="54"/></Viewbox></Border>
-</StackPanel>
+<!-- Album art remains centred in its right-hand pane. The round emblem belongs with the Gothic wordmark. -->
+<Border x:Name="AlbumArtScreen" Grid.Column="1" Width="100" Height="100"
+        HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="3"
+        Background="#0B1012" BorderBrush="#C7D8C7" BorderThickness="1">
+ <Viewbox><TextBlock Text="♫" Foreground="#C7D8C7" FontSize="54"/></Viewbox>
+</Border>
 <StackPanel x:Name="DARKWAVELogoGroup" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" IsHitTestVisible="False"><StackPanel.RenderTransform><TranslateTransform x:Name="DARKWAVELogoOffset" Y="2"/></StackPanel.RenderTransform>
+ <!-- Keep the round emblem square and matched to the actual height of the Gothic DARKWAVE lettering. -->
+ <Image x:Name="RoundDarkwaveLogo" Source="/Assets/DarkwaveLogo.png" Stretch="Uniform"
+        Width="{Binding ActualHeight, ElementName=GothicLogoTitle}"
+        Height="{Binding ActualHeight, ElementName=GothicLogoTitle}"
+        VerticalAlignment="Center" Margin="0,0,12,0"/>
  <Grid VerticalAlignment="Center">
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top">
+ <TextBlock x:Name="GothicLogoTitle" Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top">
   <TextBlock.Foreground>
    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
     <GradientStop Color="#A7B1B6" Offset="0.00"/>
