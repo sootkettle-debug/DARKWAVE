@@ -456,7 +456,6 @@ public partial class MainWindow : Window
         {
             var files = Directory.EnumerateFiles(dialog.FolderName, "*.*", SearchOption.AllDirectories).ToList();
             AddFilesToFolder(files, dialog.FolderName, System.IO.Path.GetFileName(dialog.FolderName.TrimEnd(System.IO.Path.DirectorySeparatorChar)));
-            TrackInfo.Text = $"Imported audio from {dialog.FolderName}";
         }
         catch (Exception ex)
         {
@@ -621,7 +620,6 @@ public partial class MainWindow : Window
             SetLogoPulse(true);
             PlayButton.Content = "Ⅱ";
             TrackTitle.Text = track.DisplayName;
-            TrackInfo.Text = track.Path;
             changingSeek = true;
             SeekSlider.Value = 0;
             changingSeek = false;
@@ -908,7 +906,6 @@ public partial class MainWindow : Window
                 DisposeAudio();
                 PlayButton.Content = "▶";
                 TrackTitle.Text = "NO TRACK LOADED";
-                TrackInfo.Text = "";
                 changingSeek = true;
                 SeekSlider.Value = 0;
                 changingSeek = false;
@@ -935,7 +932,6 @@ public partial class MainWindow : Window
                 activeTracks.Clear();
                 currentIndex = -1;
                 TrackTitle.Text = "NO TRACK LOADED";
-                TrackInfo.Text = "";
             }
 
             UpdateQueueCount();
@@ -983,7 +979,6 @@ public partial class MainWindow : Window
             DisposeAudio();
             PlayButton.Content = "▶";
             TrackTitle.Text = "NO TRACK LOADED";
-            TrackInfo.Text = "";
             changingSeek = true;
             SeekSlider.Value = 0;
             changingSeek = false;
@@ -1038,7 +1033,6 @@ public partial class MainWindow : Window
             DisposeAudio();
             PlayButton.Content = "▶";
             TrackTitle.Text = "NO TRACK LOADED";
-            TrackInfo.Text = "";
             changingSeek = true;
             SeekSlider.Value = 0;
             changingSeek = false;
@@ -1076,7 +1070,6 @@ public partial class MainWindow : Window
         FolderContentsTitle.Text = "TRACKS IN SELECTED FOLDER";
         FolderList.SelectedIndex = -1;
         TrackTitle.Text = "NO TRACK LOADED";
-        TrackInfo.Text = "";
         QueueCount.Text = "0 TRACKS  •  ADD A FOLDER TO BEGIN";
         PlayButton.Content = "▶";
         changingSeek = true;
