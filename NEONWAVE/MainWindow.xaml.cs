@@ -142,15 +142,17 @@ public partial class MainWindow : Window
             new Point(UpperPaneBorder.ActualWidth, 0), UpperHeaderGrid).X;
         var artRight = AlbumArtScreen.TranslatePoint(
             new Point(AlbumArtScreen.ActualWidth, 0), UpperHeaderGrid).X;
-        var roundLogoLeft = RoundDarkwaveLogo.TranslatePoint(
+        var artLeft = AlbumArtScreen.TranslatePoint(
             new Point(0, 0), UpperHeaderGrid).X;
         var panelLeft = TrackGlassPanel.TranslatePoint(
             new Point(0, 0), UpperHeaderGrid).X;
 
-        // Mirror the art-to-pane-edge margin between the glass display and round logo.
-        // The 100px logo/art pair stays centred by its WPF column alignment as resizing occurs.
+        // Keep the track glass display in the lower part of the header.
+        // The round emblem now sits with the Gothic wordmark above it, so use the
+        // album-art position instead of the moved emblem to limit the glass width.
+        // Mirror the album-art-to-pane-edge gap on its left without obstructing it.
         var mirroredGap = Math.Max(0, paneRight - artRight);
-        var availableWidth = Math.Max(1, roundLogoLeft - panelLeft - mirroredGap);
+        var availableWidth = Math.Max(1, artLeft - panelLeft - mirroredGap);
         var width = Math.Min(availableWidth, UpperHeaderGrid.ColumnDefinitions[0].ActualWidth);
         if (Math.Abs(TrackGlassPanel.ActualWidth - width) > 0.5)
             TrackGlassPanel.Width = width;
