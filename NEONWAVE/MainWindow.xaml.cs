@@ -908,7 +908,7 @@ public partial class MainWindow : Window
                 DisposeAudio();
                 PlayButton.Content = "▶";
                 TrackTitle.Text = "NO TRACK LOADED";
-                TrackInfo.Text = "Select a track to begin playback";
+                TrackInfo.Text = "";
                 changingSeek = true;
                 SeekSlider.Value = 0;
                 changingSeek = false;
@@ -983,7 +983,7 @@ public partial class MainWindow : Window
             DisposeAudio();
             PlayButton.Content = "▶";
             TrackTitle.Text = "NO TRACK LOADED";
-            TrackInfo.Text = "Select a track to begin playback";
+            TrackInfo.Text = "";
             changingSeek = true;
             SeekSlider.Value = 0;
             changingSeek = false;
@@ -1038,7 +1038,7 @@ public partial class MainWindow : Window
             DisposeAudio();
             PlayButton.Content = "▶";
             TrackTitle.Text = "NO TRACK LOADED";
-            TrackInfo.Text = "Select a track to begin playback";
+            TrackInfo.Text = "";
             changingSeek = true;
             SeekSlider.Value = 0;
             changingSeek = false;
