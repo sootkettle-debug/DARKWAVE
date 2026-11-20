@@ -101,7 +101,16 @@
  <Border.Effect><DropShadowEffect Color="#000000" BlurRadius="8" ShadowDepth="2" Opacity="0.8"/></Border.Effect>
  <StackPanel>
   <TextBlock x:Name="TrackTitle" Text="NO TRACK LOADED" Foreground="{DynamicResource AccentBrush}" FontSize="21" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-  <TextBlock x:Name="TrackInfo" Text="" Foreground="{DynamicResource AccentBrush}" FontSize="11" Height="16" TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
+  <TextBlock x:Name="TrackInfo" Text="" Foreground="{DynamicResource AccentBrush}" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,1,0,0">
+   <TextBlock.Style>
+    <Style TargetType="TextBlock">
+     <Setter Property="Visibility" Value="Visible"/>
+     <Style.Triggers>
+      <Trigger Property="Text" Value=""><Setter Property="Visibility" Value="Collapsed"/></Trigger>
+     </Style.Triggers>
+    </Style>
+   </TextBlock.Style>
+  </TextBlock>
  </StackPanel>
 </Border>
 </StackPanel>
