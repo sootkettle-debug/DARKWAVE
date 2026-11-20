@@ -70,7 +70,7 @@ public partial class MainWindow : Window
     private bool changingSeek;
     private bool draggingSeek;
     private int currentIndex = -1;
-    private double volumePercent = 80;
+    private double volumePercent = 40;
     private double knobDragStartY;
     private double knobDragStartVolume;
     private bool knobDragging;
