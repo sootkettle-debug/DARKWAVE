@@ -236,7 +236,8 @@ public partial class MainWindow : Window
     private void ApplyAccentToElement(DependencyObject element, Brush brush)
     {
         // The ready-status label is deliberately neutral gray in every accent mode.
-        if (ReferenceEquals(element, ReadyStatusText)) return;
+        if (ReferenceEquals(element, ReadyStatusText) ||
+            ReferenceEquals(element, LevelCautionLabel)) return;
 
         // TextBlock and templated content use different foreground properties.
         if (element is TextBlock textBlock)
