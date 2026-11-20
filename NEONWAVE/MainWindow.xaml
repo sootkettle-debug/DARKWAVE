@@ -85,9 +85,9 @@
   <Border x:Name="LogoGlow" Visibility="Collapsed" Width="0" Height="0"/>
   <Border Grid.Row="0" Background="#20272A" BorderBrush="#657176" BorderThickness="1" CornerRadius="4" Padding="16,4,16,6" Margin="0,0,0,14"><Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><Grid x:Name="UpperHeaderGrid" Grid.Row="0" SizeChanged="UpperHeaderGrid_SizeChanged">
 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="220"/></Grid.ColumnDefinitions>
-<StackPanel Grid.Column="0" Margin="0,0,10,0">
+<StackPanel Grid.Column="0">
 <Grid Height="72"/>
-<!-- Black glass title display ends midway between the + mark and the circular emblem. -->
+<!-- Glass panel ends as close to the round logo as the album art is to the right pane edge. -->
 <Border x:Name="TrackGlassPanel" HorizontalAlignment="Left" Height="34" Margin="0,16,0,0" Padding="10,2,10,2"
         CornerRadius="7" BorderBrush="#59666B" BorderThickness="1">
  <Border.Background>
@@ -107,7 +107,7 @@
 <!-- Both 100px displays are centred in the header space above the progress bar, with room between them and the glass title. -->
 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
  <Image x:Name="RoundDarkwaveLogo" Width="100" Height="100" Source="/Assets/DarkwaveLogo.png" Stretch="Uniform" Margin="0,0,12,0"/>
- <Border Width="100" Height="100" CornerRadius="3" Background="#0B1012" BorderBrush="#C7D8C7" BorderThickness="1"><Viewbox><TextBlock Text="♫" Foreground="#C7D8C7" FontSize="54"/></Viewbox></Border>
+ <Border x:Name="AlbumArtScreen" Width="100" Height="100" CornerRadius="3" Background="#0B1012" BorderBrush="#C7D8C7" BorderThickness="1"><Viewbox><TextBlock Text="♫" Foreground="#C7D8C7" FontSize="54"/></Viewbox></Border>
 </StackPanel>
 <StackPanel x:Name="DARKWAVELogoGroup" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" IsHitTestVisible="False"><StackPanel.RenderTransform><TranslateTransform x:Name="DARKWAVELogoOffset" Y="2"/></StackPanel.RenderTransform>
  <Grid VerticalAlignment="Center">
