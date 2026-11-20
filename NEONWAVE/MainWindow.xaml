@@ -88,7 +88,7 @@
 <StackPanel Grid.Column="0" Margin="0,0,10,0">
 <Grid Height="72"/>
 <!-- Black glass title display ends midway between the + mark and the circular emblem. -->
-<Border x:Name="TrackGlassPanel" HorizontalAlignment="Left" Margin="0,16,0,0" Padding="10,4,10,7"
+<Border x:Name="TrackGlassPanel" HorizontalAlignment="Left" Margin="0,16,0,0" Padding="10,2,10,2"
         CornerRadius="7" BorderBrush="#59666B" BorderThickness="1">
  <Border.Background>
   <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
