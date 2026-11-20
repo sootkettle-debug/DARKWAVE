@@ -88,7 +88,7 @@
 <StackPanel Grid.Column="0" Margin="0,0,10,0">
 <Grid Height="72"/>
 <!-- Black glass title display ends midway between the + mark and the circular emblem. -->
-<Border x:Name="TrackGlassPanel" HorizontalAlignment="Left" Margin="0,16,0,0" Padding="10,2,10,2"
+<Border x:Name="TrackGlassPanel" HorizontalAlignment="Left" Height="34" Margin="0,16,0,0" Padding="10,2,10,2"
         CornerRadius="7" BorderBrush="#59666B" BorderThickness="1">
  <Border.Background>
   <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -99,19 +99,9 @@
   </LinearGradientBrush>
  </Border.Background>
  <Border.Effect><DropShadowEffect Color="#000000" BlurRadius="8" ShadowDepth="2" Opacity="0.8"/></Border.Effect>
- <StackPanel>
-  <TextBlock x:Name="TrackTitle" Text="NO TRACK LOADED" Foreground="{DynamicResource AccentBrush}" FontSize="21" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-  <TextBlock x:Name="TrackInfo" Text="" Foreground="{DynamicResource AccentBrush}" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,1,0,0">
-   <TextBlock.Style>
-    <Style TargetType="TextBlock">
-     <Setter Property="Visibility" Value="Visible"/>
-     <Style.Triggers>
-      <Trigger Property="Text" Value=""><Setter Property="Visibility" Value="Collapsed"/></Trigger>
-     </Style.Triggers>
-    </Style>
-   </TextBlock.Style>
-  </TextBlock>
- </StackPanel>
+ <TextBlock x:Name="TrackTitle" Text="NO TRACK LOADED" Foreground="{DynamicResource AccentBrush}"
+            FontFamily="Consolas" FontStyle="Italic" FontSize="20" FontWeight="SemiBold"
+            VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
 </Border>
 </StackPanel>
 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"><StackPanel.RenderTransform><TranslateTransform Y="-14"/></StackPanel.RenderTransform>
