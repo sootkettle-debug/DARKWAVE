@@ -234,13 +234,13 @@
  <TextBlock Text="VOLUME" Foreground="{DynamicResource AccentBrush}" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,8,0,0" Panel.ZIndex="1"/>
  <Grid x:Name="VolumeKnob" Width="82" Height="82" VerticalAlignment="Bottom" HorizontalAlignment="Center" Background="Transparent" Cursor="Hand" ToolTip="Hold left mouse button and drag up/down to adjust volume; mouse wheel also works" MouseLeftButtonDown="VolumeKnob_MouseDown" MouseMove="VolumeKnob_MouseMove" MouseLeftButtonUp="VolumeKnob_MouseUp" LostMouseCapture="VolumeKnob_LostMouseCapture" MouseWheel="VolumeKnob_MouseWheel">
   <Ellipse Margin="7" Stroke="#788487" StrokeThickness="2"><Ellipse.Fill><RadialGradientBrush Center="0.3,0.24" GradientOrigin="0.3,0.24"><GradientStop Color="#4B5658" Offset="0"/><GradientStop Color="#1B2225" Offset="0.65"/><GradientStop Color="#060A0D" Offset="1"/></RadialGradientBrush></Ellipse.Fill><Ellipse.Effect><DropShadowEffect BlurRadius="7" Color="#000000" ShadowDepth="2" Opacity="0.9"/></Ellipse.Effect></Ellipse>
-  <Grid IsHitTestVisible="False"><Grid.RenderTransform><RotateTransform x:Name="VolumeKnobRotation" Angle="81" CenterX="41" CenterY="41"/></Grid.RenderTransform><Rectangle Width="4" Height="17" RadiusX="2" RadiusY="2" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Top" Margin="0,15,0,0"/></Grid>
+  <Grid IsHitTestVisible="False"><Grid.RenderTransform><RotateTransform x:Name="VolumeKnobRotation" Angle="-27" CenterX="41" CenterY="41"/></Grid.RenderTransform><Rectangle Width="4" Height="17" RadiusX="2" RadiusY="2" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Top" Margin="0,15,0,0"/></Grid>
   <Ellipse Width="7" Height="7" Fill="White" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,5" IsHitTestVisible="False"/>
   <Ellipse Width="7" Height="7" Fill="White" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,5" IsHitTestVisible="False"/>
  </Grid>
 </Grid>
 <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0,0,1,0">
- <Border Height="24" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="5" Background="#07110C" Margin="0,0,0,3" Padding="0"><TextBlock x:Name="VolumeText" Text="80%" Foreground="{DynamicResource AccentBrush}" FontSize="12" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center"/></Border>
+ <Border Height="24" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="5" Background="#07110C" Margin="0,0,0,3" Padding="0"><TextBlock x:Name="VolumeText" Text="40%" Foreground="{DynamicResource AccentBrush}" FontSize="12" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center"/></Border>
  <Button x:Name="DimButton" Content="DIM" Click="Dim_Click" ToolTip="Lower to 10%; click again to restore previous volume" Height="23" FontSize="12" Margin="0,0,0,3" Padding="0"/>
  <Button x:Name="MuteButton" Content="MUTE" Click="Mute_Click" ToolTip="Mute / restore volume" Height="23" FontSize="10" Margin="0" Padding="0"/>
 </StackPanel>
