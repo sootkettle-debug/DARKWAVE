@@ -132,18 +132,24 @@ public partial class MainWindow : Window
     private void AlignTrackGlassPanel()
     {
         if (!UpperHeaderGrid.IsLoaded ||
-            LogoPlusMark.ActualWidth <= 0 ||
+            UpperPaneBorder.ActualWidth <= 0 ||
+            AlbumArtScreen.ActualWidth <= 0 ||
             RoundDarkwaveLogo.ActualWidth <= 0) return;
 
-        var plusRight = LogoPlusMark.TranslatePoint(
-            new Point(LogoPlusMark.ActualWidth, 0), UpperHeaderGrid).X;
-        var emblemLeft = RoundDarkwaveLogo.TranslatePoint(
+        var paneRight = UpperPaneBorder.TranslatePoint(
+            new Point(UpperPaneBorder.ActualWidth, 0), UpperHeaderGrid).X;
+        var artRight = AlbumArtScreen.TranslatePoint(
+            new Point(AlbumArtScreen.ActualWidth, 0), UpperHeaderGrid).X;
+        var roundLogoLeft = RoundDarkwaveLogo.TranslatePoint(
             new Point(0, 0), UpperHeaderGrid).X;
         var panelLeft = TrackGlassPanel.TranslatePoint(
             new Point(0, 0), UpperHeaderGrid).X;
 
-        // Stop the glass panel halfway between the logo's + and the round emblem.
-        var width = Math.Max(180, (plusRight + emblemLeft) / 2 - panelLeft);
+        // Mirror the art-to-pane-edge margin between the glass display and round logo.
+        // The 100px logo/art pair stays centred by its WPF column alignment as resizing occurs.
+        var mirroredGap = Math.Max(0, paneRight - artRight);
+        var availableWidth = Math.Max(1, roundLogoLeft - panelLeft - mirroredGap);
+        var width = Math.Min(availableWidth, UpperHeaderGrid.ColumnDefinitions[0].ActualWidth);
         if (Math.Abs(TrackGlassPanel.ActualWidth - width) > 0.5)
             TrackGlassPanel.Width = width;
 
