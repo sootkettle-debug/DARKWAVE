@@ -768,6 +768,7 @@ public partial class MainWindow : Window
         VolumeText.Text = $"{volumePercent:0}%";
         // The indicator stops at the two endpoint dots.
         VolumeKnobRotation.Angle = -135 + volumePercent * 2.7;
+        UpdateVolumeWarningLed();
         if (reader != null) reader.Volume = (float)(volumePercent / 100.0);
         if (DimButton != null)
         {
@@ -781,6 +782,34 @@ public partial class MainWindow : Window
             MuteButton.Content = muteRestoreVolume.HasValue ? "UNMUTE" : "MUTE";
             MuteButton.ToolTip = muteRestoreVolume.HasValue ? "Restore volume" : "Mute";
         }
+    }
+
+    private void UpdateVolumeWarningLed()
+    {
+        if (VolumeWarningLed == null ||
+            VolumeWarningLed.Fill is not RadialGradientBrush lens ||
+            VolumeWarningLed.Effect is not DropShadowEffect glow) return;
+
+        // Player percentage is only a caution threshold; it is not a decibel measurement.
+        bool amber = volumePercent >= 60 && volumePercent < 80;
+        bool red = volumePercent >= 80;
+        Color main = red ? Color.FromRgb(255, 55, 40) :
+                     amber ? Color.FromRgb(255, 178, 28) : Color.FromRgb(80, 90, 93);
+
+        lens.GradientStops[0].Color = red ? Color.FromRgb(255, 239, 213) :
+                                      amber ? Color.FromRgb(255, 250, 211) : Color.FromRgb(80, 90, 93);
+        lens.GradientStops[1].Color = main;
+        lens.GradientStops[2].Color = red ? Color.FromRgb(106, 13, 10) :
+                                      amber ? Color.FromRgb(116, 64, 8) : Color.FromRgb(12, 17, 19);
+        glow.Color = main;
+        glow.Opacity = amber || red ? 0.95 : 0;
+        VolumeWarningLed.Stroke = new SolidColorBrush(
+            amber || red ? main : Color.FromRgb(89, 97, 103));
+        VolumeWarningLed.ToolTip = red
+            ? "High volume setting (80–100%). Hearing risk depends on actual sound level and listening time."
+            : amber
+                ? "Volume caution (60–79%). Percentage does not measure sound level in dB."
+                : "Volume warning LED: amber at 60%, red at 80%.";
     }
 
     private void Dim_Click(object sender, RoutedEventArgs e)
