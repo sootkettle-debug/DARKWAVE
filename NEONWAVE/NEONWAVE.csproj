@@ -15,6 +15,8 @@
     <PackageReference Include="NAudio" Version="2.2.1" />
     <Resource Include="app.ico" />
     <Resource Include="Fonts\PirataOne-Regular.ttf" />
+    <Resource Include="Fonts\DSEG14Classic-Italic.ttf" />
+    <None Include="Fonts\DSEG-LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
     <Resource Include="Assets\DarkwaveLogo.png" />
   </ItemGroup>
 </Project>
