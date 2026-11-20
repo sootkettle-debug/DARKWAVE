@@ -235,6 +235,11 @@
  <Grid x:Name="VolumeKnob" Width="82" Height="82" VerticalAlignment="Bottom" HorizontalAlignment="Center" Background="Transparent" Cursor="Hand" ToolTip="Hold left mouse button and drag up/down to adjust volume; mouse wheel also works" MouseLeftButtonDown="VolumeKnob_MouseDown" MouseMove="VolumeKnob_MouseMove" MouseLeftButtonUp="VolumeKnob_MouseUp" LostMouseCapture="VolumeKnob_LostMouseCapture" MouseWheel="VolumeKnob_MouseWheel">
   <Ellipse Margin="7" Stroke="#788487" StrokeThickness="2"><Ellipse.Fill><RadialGradientBrush Center="0.3,0.24" GradientOrigin="0.3,0.24"><GradientStop Color="#4B5658" Offset="0"/><GradientStop Color="#1B2225" Offset="0.65"/><GradientStop Color="#060A0D" Offset="1"/></RadialGradientBrush></Ellipse.Fill><Ellipse.Effect><DropShadowEffect BlurRadius="7" Color="#000000" ShadowDepth="2" Opacity="0.9"/></Ellipse.Effect></Ellipse>
   <Grid IsHitTestVisible="False"><Grid.RenderTransform><RotateTransform x:Name="VolumeKnobRotation" Angle="-27" CenterX="41" CenterY="41"/></Grid.RenderTransform><Rectangle Width="4" Height="17" RadiusX="2" RadiusY="2" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Top" Margin="0,15,0,0"/></Grid>
+  <!-- Fixed two-line hardware-style label, 6px to the left of the LED. -->
+  <TextBlock Width="54" HorizontalAlignment="Left" VerticalAlignment="Center"
+             Margin="-79,0,0,0" FontFamily="Segoe UI" FontSize="9"
+             FontWeight="SemiBold" Foreground="#92999C" TextAlignment="Right"
+             IsHitTestVisible="False" Panel.ZIndex="2"><Run Text="LEVEL"/><LineBreak/><Run Text="CAUTION"/></TextBlock>
   <!-- 14px warning LED at the vertical centre-left of the knob, with
        5px clearance to its edge, matching the gray limit dots' inset. -->
   <Ellipse x:Name="VolumeWarningLed" Width="14" Height="14" HorizontalAlignment="Left"
