@@ -112,6 +112,7 @@ public partial class MainWindow : Window
             new RoutedEventHandler(AccentElement_Loaded), true);
         Loaded += (_, _) => Dispatcher.BeginInvoke(ApplyAccentToLoadedPanels,
             DispatcherPriority.Loaded);
+        Loaded += (_, _) => QueueAccentButtonsAlignment();
         FolderList.ItemsSource = folders;
         PlaylistList.ItemsSource = playlists;
         timer.Tick += (_, _) => UpdateDisplay();
@@ -119,6 +120,34 @@ public partial class MainWindow : Window
         Closed += (_, _) => DisposeAudio();
     }
 
+
+    private void PlaybackControlsPanel_SizeChanged(object sender, SizeChangedEventArgs e) =>
+        QueueAccentButtonsAlignment();
+
+    private void QueueAccentButtonsAlignment() =>
+        Dispatcher.BeginInvoke(new Action(AlignAccentButtonsBetweenControls),
+            DispatcherPriority.Loaded);
+
+    private void AlignAccentButtonsBetweenControls()
+    {
+        if (!PlaybackControlsPanel.IsLoaded ||
+            PlaybackButtonBar.ActualWidth <= 0 ||
+            VolumeKnob.ActualWidth <= 0 ||
+            AccentButtonsPanel.ActualWidth <= 0) return;
+
+        // Center the five colour buttons in the actual gap between the
+        // right edge of the playback button row and the left edge of the volume knob.
+        // TranslatePoint includes any existing transform, so subtract the
+        // current offset before applying the new one.
+        var playRight = PlaybackButtonBar.TranslatePoint(
+            new Point(PlaybackButtonBar.ActualWidth, 0), PlaybackControlsPanel).X;
+        var volumeLeft = VolumeKnob.TranslatePoint(
+            new Point(0, 0), PlaybackControlsPanel).X;
+        var currentCenter = AccentButtonsPanel.TranslatePoint(
+            new Point(AccentButtonsPanel.ActualWidth / 2, 0), PlaybackControlsPanel).X;
+        var desiredCenter = (playRight + volumeLeft) / 2;
+        AccentButtonsOffset.X += desiredCenter - currentCenter;
+    }
 
     private void AccentPurple_Click(object sender, RoutedEventArgs e) =>
         ApplyAccentColor(Color.FromRgb(166, 91, 224));
