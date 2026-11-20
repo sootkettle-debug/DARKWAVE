@@ -146,6 +146,18 @@ public partial class MainWindow : Window
         var width = Math.Max(180, (plusRight + emblemLeft) / 2 - panelLeft);
         if (Math.Abs(TrackGlassPanel.ActualWidth - width) > 0.5)
             TrackGlassPanel.Width = width;
+
+        // Keep the DARKWAVE+ lettering vertically centred between the upper
+        // pane's top edge and the top of the track-title glass panel.
+        if (DARKWAVELogoGroup.ActualHeight > 0)
+        {
+            var panelTop = TrackGlassPanel.TranslatePoint(
+                new Point(0, 0), UpperHeaderGrid).Y;
+            var logoCentre = DARKWAVELogoGroup.TranslatePoint(
+                new Point(0, DARKWAVELogoGroup.ActualHeight / 2), UpperHeaderGrid).Y;
+            var desiredCentre = panelTop / 2;
+            DARKWAVELogoOffset.Y += desiredCentre - logoCentre;
+        }
     }
 
     private void PlaybackControlsPanel_SizeChanged(object sender, SizeChangedEventArgs e) =>
