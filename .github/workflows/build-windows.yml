@@ -125,10 +125,22 @@ jobs:
           amber at 60–79% and red at 80–100%. This is a volume-setting reminder, not a
           measurement of actual sound level.
 
-          The current blue-and-black DARKWAVE+ emblem is included in the executable.
+          The current blue-and-black DARKWAVE+ emblem is included in the executable,
+          sized to sit beside the Gothic DARKWAVE+ lettering. The album-art display
+          has been enlarged and repositioned for balanced header spacing.
           Supports common local audio formats subject to Windows codec availability.
 
           This release is built exclusively from the **darkwave-plus** branch and is
           separate from the original DARKWAVE v1.0.
           '@ | Set-Content -Path RELEASE_NOTES_PLUS.md -Encoding utf8
-          gh release create darkwave-plus-v1.0.0 'release-files/DARKWAVE+.exe' DARKWAVE-Plus-Windows-x64.zip --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "DARKWAVE+ v1.0.0 — Windows x64" --notes-file RELEASE_NOTES_PLUS.md --latest=false
+          gh release view darkwave-plus-v1.0.0 --repo "${{ github.repository }}" *> $null
+          if ($LASTEXITCODE -eq 0) {
+            # Refresh the public download files at their existing stable links.
+            gh release upload darkwave-plus-v1.0.0 'release-files/DARKWAVE+.exe' DARKWAVE-Plus-Windows-x64.zip --repo "${{ github.repository }}" --clobber
+            if ($LASTEXITCODE -ne 0) { throw "DARKWAVE+ asset replacement failed." }
+            gh release edit darkwave-plus-v1.0.0 --repo "${{ github.repository }}" --notes-file RELEASE_NOTES_PLUS.md
+            if ($LASTEXITCODE -ne 0) { throw "DARKWAVE+ release update failed." }
+          } else {
+            gh release create darkwave-plus-v1.0.0 'release-files/DARKWAVE+.exe' DARKWAVE-Plus-Windows-x64.zip --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "DARKWAVE+ v1.0.0 — Windows x64" --notes-file RELEASE_NOTES_PLUS.md --latest=false
+            if ($LASTEXITCODE -ne 0) { throw "DARKWAVE+ release creation failed." }
+          }
