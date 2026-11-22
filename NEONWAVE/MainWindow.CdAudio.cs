@@ -133,11 +133,13 @@ public partial class MainWindow
 
     private bool PlayCdTrack(int track, TimeSpan? offset = null)
     {
-        if (!cdOpen || cdReader == null || !cdReader.SelectTrack(track)) return false;
+        if (!cdOpen || cdReader == null) return false;
         try
         {
             if (reader != null || output != null) DisposeAudio();
+            // Stop the callback thread BEFORE seeking or changing the raw-CD track.
             DisposeCdOutput();
+            if (!cdReader.SelectTrack(track)) return false;
             cdReader.Position = Math.Clamp((long)(offset.GetValueOrDefault().TotalSeconds * cdReader.WaveFormat.AverageBytesPerSecond), 0L, cdReader.Length);
             cdCurrentTrack = track;
             cdTrackDuration = cdReader.TotalTime;
