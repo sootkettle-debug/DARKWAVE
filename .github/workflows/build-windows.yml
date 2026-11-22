@@ -2,7 +2,7 @@ name: Build and release DARKWAVE for Windows
 
 on:
   push:
-    branches: [ main, darkwave-plus ]
+    branches: [ main, darkwave-plus, compact-dark ]
   workflow_dispatch:
 
 permissions:
@@ -26,7 +26,16 @@ jobs:
         run: dotnet restore NEONWAVE/NEONWAVE.csproj
       - name: Publish standalone x64 app
         run: dotnet publish NEONWAVE/NEONWAVE.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish
+      - name: Upload Compact Dark executable
+        if: github.ref == 'refs/heads/compact-dark'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Compact-Dark-Windows-x64
+          path: publish/Compact Dark.exe
+          if-no-files-found: error
+          retention-days: 30
       - name: Upload DARKWAVE+ executable
+        if: github.ref != 'refs/heads/compact-dark'
         uses: actions/upload-artifact@v4
         with:
           name: DARKWAVE-Plus-Windows-x64
