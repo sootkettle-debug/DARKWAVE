@@ -84,7 +84,7 @@
   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition x:Name="LibraryRow" Height="*"/></Grid.RowDefinitions>
   <Border x:Name="LogoGlow" Visibility="Collapsed" Width="0" Height="0"/>
   <Border x:Name="UpperPaneBorder" Grid.Row="0" Background="#1B2023" BorderBrush="#5C5B54" BorderThickness="1" CornerRadius="4" Padding="9,2,9,5" Margin="0,0,0,7"><Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><Grid x:Name="UpperHeaderGrid" Grid.Row="0" SizeChanged="UpperHeaderGrid_SizeChanged">
-<Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="182"/></Grid.ColumnDefinitions>
+<Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="94"/></Grid.ColumnDefinitions>
 <StackPanel Grid.Column="0">
 <Grid Height="72"/>
 <!-- Glass panel ends as close to the round logo as the album art is to the right pane edge. -->
@@ -107,9 +107,9 @@
  </Viewbox>
 </Border>
 </StackPanel>
-<!-- Both 100px displays are centred in the header space above the progress bar, with room between them and the glass title. -->
-<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
- <Image x:Name="RoundDarkwaveLogo" Width="78" Height="78" Source="/Assets/DarkwaveLogo.png" Stretch="Uniform" Margin="0,0,12,0"/>
+<!-- Album art only. The former centred position left roughly 22px of top space;
+     retaining 40% of that space moves the artwork up by about 60%. -->
+<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,9,0,0">
  <Border x:Name="AlbumArtScreen" Width="78" Height="78" CornerRadius="3" Background="#0B1011" BorderBrush="#FFA43A" BorderThickness="1"><Viewbox><TextBlock Text="♫" Foreground="#FFA43A" FontSize="43"/></Viewbox></Border>
 </StackPanel>
 <StackPanel x:Name="DARKWAVELogoGroup" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" IsHitTestVisible="False"><StackPanel.RenderTransform><TranslateTransform x:Name="DARKWAVELogoOffset" Y="2"/></StackPanel.RenderTransform>
