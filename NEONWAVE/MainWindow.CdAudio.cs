@@ -10,6 +10,69 @@ namespace NEONWAVE;
 
 public partial class MainWindow
 {
+    // DISC is the startup source so inserting an audio CD still starts it automatically.
+    private bool discModeSelected = true;
+
+    private void DiscMode_Click(object sender, RoutedEventArgs e) => SelectPlaybackMode(true);
+
+    private void FileMode_Click(object sender, RoutedEventArgs e) => SelectPlaybackMode(false);
+
+    private void SelectPlaybackMode(bool selectDisc)
+    {
+        if (discModeSelected == selectDisc) return;
+        discModeSelected = selectDisc;
+        if (selectDisc)
+        {
+            if (output != null || reader != null) DisposeAudio();
+            cdAttemptedForInsertion = false;
+            lastReadyCdDrive = null;
+            TrackTitle.Text = "NO DISC";
+            ElapsedText.Text = DurationText.Text = "0:00";
+            changingSeek = true;
+            SeekSlider.Value = 0;
+            changingSeek = false;
+            PlayButton.Content = "▶";
+            UpdateDiscIndicator();
+        }
+        else
+        {
+            if (cdOpen) CloseCdSession(clearDisplay: false);
+            PlayButton.Content = "▶";
+            if (reader != null && currentIndex >= 0 && currentIndex < activeTracks.Count)
+                TrackTitle.Text = activeTracks[currentIndex].DisplayName;
+            else
+            {
+                TrackTitle.Text = "NO TRACK LOADED";
+                ElapsedText.Text = DurationText.Text = "0:00";
+                changingSeek = true;
+                SeekSlider.Value = 0;
+                changingSeek = false;
+            }
+            UpdateSourceModeDisplays();
+        }
+    }
+
+    private void UpdateSourceModeDisplays()
+    {
+        if (DiscIndicator == null || FileIndicator == null ||
+            DiscModeButton == null || FileModeButton == null) return;
+        var offBrush = new SolidColorBrush(Color.FromRgb(81, 88, 92));
+        DiscIndicator.Foreground = discModeSelected ? currentAccentBrush : offBrush;
+        FileIndicator.Foreground = discModeSelected ? offBrush : currentAccentBrush;
+        DiscIndicator.Effect = discModeSelected
+            ? new System.Windows.Media.Effects.DropShadowEffect
+            {
+                Color = currentAccentColor, BlurRadius = 8, ShadowDepth = 0, Opacity = 0.85
+            } : null;
+        FileIndicator.Effect = !discModeSelected
+            ? new System.Windows.Media.Effects.DropShadowEffect
+            {
+                Color = currentAccentColor, BlurRadius = 8, ShadowDepth = 0, Opacity = 0.85
+            } : null;
+        DiscModeButton.Foreground = discModeSelected ? currentAccentBrush : offBrush;
+        FileModeButton.Foreground = discModeSelected ? offBrush : currentAccentBrush;
+    }
+
     // MCI provides Windows' native audio-CD transport; file playback still uses NAudio.
     private const string CdAlias = "CompactDarkAudioDisc";
     private string? cdDrive;
@@ -55,18 +118,22 @@ public partial class MainWindow
 
     private void PollAudioCd(bool mediaPresent, string? driveName)
     {
+        // Only DISC mode can activate a CD. File mode never steals playback
+        // from the library when a disc is inserted.
+        if (!discModeSelected) return;
         // Called by the existing two-second optical-drive poll.
         if (!mediaPresent || driveName == null)
         {
-            if (cdOpen) CloseCdSession(clearDisplay: true);
+            if (cdOpen) CloseCdSession(clearDisplay: false);
             lastReadyCdDrive = null;
             cdAttemptedForInsertion = false;
+            TrackTitle.Text = "NO DISC";
             return;
         }
 
         if (!string.Equals(lastReadyCdDrive, driveName, StringComparison.OrdinalIgnoreCase))
         {
-            if (cdOpen) CloseCdSession(clearDisplay: true);
+            if (cdOpen) CloseCdSession(clearDisplay: false);
             lastReadyCdDrive = driveName;
             cdAttemptedForInsertion = false;
         }
@@ -76,7 +143,8 @@ public partial class MainWindow
             if (!string.Equals(CdQuery($"status {CdAlias} media present"), "true",
                     StringComparison.OrdinalIgnoreCase))
             {
-                CloseCdSession(clearDisplay: true);
+                CloseCdSession(clearDisplay: false);
+                TrackTitle.Text = "NO DISC";
                 cdAttemptedForInsertion = false;
             }
             else return;
