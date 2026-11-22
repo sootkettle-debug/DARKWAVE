@@ -1,16 +1,14 @@
 from pathlib import Path
-from base64 import b64decode
-from io import BytesIO
 from PIL import Image
 
-# Supplied DARKWAVE+ circular emblem with blue gradient, black artwork, and plus sign.
-# Embedded source keeps CI builds reproducible without external downloads.
-LOGO_PNG = "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"
+# This image is derived from the Darkwave+CD icon supplied for the build.
+SOURCE = Path("NEONWAVE/Assets/DarkwaveCDIcon.png")
 OUT = Path("NEONWAVE/app.ico")
-source = Image.open(BytesIO(b64decode(LOGO_PNG))).convert("RGBA")
-sizes = [16, 24, 32, 48, 64, 128, 256]
-OUT.parent.mkdir(parents=True, exist_ok=True)
-source.resize((256, 256), Image.Resampling.LANCZOS).save(
-    OUT, format="ICO", sizes=[(n, n) for n in sizes]
-)
-print(f"Created DARKWAVE+ emblem icon: {OUT}")
+with Image.open(SOURCE) as uploaded:
+    image = uploaded.convert("RGBA")
+    canvas = Image.new("RGBA", (256, 256), (0, 0, 0, 255))
+    image.thumbnail((256, 256), Image.Resampling.LANCZOS)
+    canvas.alpha_composite(image, ((256 - image.width) // 2, (256 - image.height) // 2))
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(OUT, format="ICO", sizes=[(s, s) for s in (16, 24, 32, 48, 64, 128, 256)])
+print(f"Created Darkwave+CD application icon: {OUT}")

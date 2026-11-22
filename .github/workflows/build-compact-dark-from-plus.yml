@@ -1,4 +1,4 @@
-name: Build Compact Dark from DARKWAVE+ (Windows x64)
+name: Build Darkwave+CD (Windows x64)
 
 on:
   push:
@@ -22,15 +22,12 @@ jobs:
           python tools/create_icon.py
       - name: Restore actual DARKWAVE+ project
         run: dotnet restore NEONWAVE/NEONWAVE.csproj
-      - name: Publish Compact Dark Windows x64
-        run: dotnet publish NEONWAVE/NEONWAVE.csproj --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:AssemblyName=CompactDark -o publish
-      - name: Package
-        shell: pwsh
-        run: Compress-Archive -Path publish/CompactDark.exe -DestinationPath Compact-Dark-From-Plus-Windows-x64.zip
-      - name: Upload Windows preview
+      - name: Publish Darkwave+CD Windows x64
+        run: dotnet publish NEONWAVE/NEONWAVE.csproj --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish
+      - name: Upload Darkwave+CD executable
         uses: actions/upload-artifact@v4
         with:
-          name: Compact-Dark-From-DARKWAVE-Plus-Windows-x64
-          path: Compact-Dark-From-Plus-Windows-x64.zip
+          name: Darkwave+CD-Windows-x64
+          path: publish/Darkwave+CD.exe
           if-no-files-found: error
           retention-days: 30
