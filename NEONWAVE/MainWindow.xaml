@@ -180,8 +180,9 @@
   </StackPanel>
   <!-- Group 2: accent colour buttons -->
   <Grid Grid.Column="2" Width="105" Height="84" VerticalAlignment="Center" HorizontalAlignment="Center">
-    <!-- DISC is centered on the vertical axis of this control group. -->
+    <!-- Align the framed DISC display with the volume-knob centre, not the centre of this taller group container. -->
     <Border Width="64" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center"
+            Margin="0,14,0,0"
             Background="#0A0E10" BorderBrush="#566166" BorderThickness="1"
             CornerRadius="4" Padding="5,2">
       <TextBlock x:Name="DiscIndicator" Text="DISC"
