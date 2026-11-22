@@ -555,7 +555,6 @@ public partial class MainWindow : Window
         // Close the active CD transport before opening the tray.
         if (cdOpen) CloseCdSession(clearDisplay: true);
         if (discModeSelected) TrackTitle.Text = "NO DISC";
-        cdAttemptedForInsertion = true;
         try
         {
             var drives = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.CDRom).ToList();
@@ -606,7 +605,7 @@ public partial class MainWindow : Window
             else
             {
                 // Retry on demand when an audio CD is inserted after an earlier failure.
-                cdAttemptedForInsertion = false;
+                cdLastOpenAttemptUtc = DateTime.MinValue;
                 UpdateDiscIndicator();
             }
             return;
