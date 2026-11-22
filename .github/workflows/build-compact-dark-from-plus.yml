@@ -1,0 +1,36 @@
+name: Build Compact Dark from DARKWAVE+ (Windows x64)
+
+on:
+  push:
+    branches: [compact-dark-from-plus]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Generate Windows icon
+        run: |
+          python -m pip install Pillow
+          python tools/create_icon.py
+      - name: Restore actual DARKWAVE+ project
+        run: dotnet restore NEONWAVE/NEONWAVE.csproj
+      - name: Publish Compact Dark Windows x64
+        run: dotnet publish NEONWAVE/NEONWAVE.csproj --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:AssemblyName=CompactDark -o publish
+      - name: Package
+        shell: pwsh
+        run: Compress-Archive -Path publish/CompactDark.exe -DestinationPath Compact-Dark-From-Plus-Windows-x64.zip
+      - name: Upload Windows preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: Compact-Dark-From-DARKWAVE-Plus-Windows-x64
+          path: Compact-Dark-From-Plus-Windows-x64.zip
+          if-no-files-found: error
+          retention-days: 30
