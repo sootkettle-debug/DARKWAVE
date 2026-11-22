@@ -134,20 +134,13 @@ public partial class MainWindow : Window
             UpperPaneBorder.ActualWidth <= 0 ||
             AlbumArtScreen.ActualWidth <= 0) return;
 
-        var paneRight = UpperPaneBorder.TranslatePoint(
-            new Point(UpperPaneBorder.ActualWidth, 0), UpperHeaderGrid).X;
-        var artRight = AlbumArtScreen.TranslatePoint(
-            new Point(AlbumArtScreen.ActualWidth, 0), UpperHeaderGrid).X;
-        var artLeft = AlbumArtScreen.TranslatePoint(
-            new Point(0, 0), UpperHeaderGrid).X;
         var panelLeft = TrackGlassPanel.TranslatePoint(
             new Point(0, 0), UpperHeaderGrid).X;
 
-        // Size the title display to the remaining room before album art,
-        // retaining a gap similar to the artwork's right-side inset.
-        var mirroredGap = Math.Max(8, paneRight - artRight);
-        var availableWidth = Math.Max(1, artLeft - panelLeft - mirroredGap);
-        var width = Math.Min(availableWidth, UpperHeaderGrid.ColumnDefinitions[0].ActualWidth);
+        // The title display sits below the raised album art, so it can span
+        // the entire header. Both sides inherit the same 9px pane padding.
+        // Unlike the previous calculation, do not stop at the album-art column.
+        var width = Math.Max(1, UpperHeaderGrid.ActualWidth - panelLeft);
         if (Math.Abs(TrackGlassPanel.ActualWidth - width) > 0.5)
             TrackGlassPanel.Width = width;
 
