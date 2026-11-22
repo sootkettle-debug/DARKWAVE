@@ -2,6 +2,8 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
 using System.Diagnostics;
+using System.Collections.ObjectModel;
+using System.Windows.Controls;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -24,6 +26,10 @@ public partial class MainWindow
     private int cdTrackCount;
     private TimeSpan cdTrackDuration;
     private DateTime cdLastOpenAttemptUtc = DateTime.MinValue;
+    private readonly ObservableCollection<Track> cdListTracks = new();
+    private readonly System.Collections.Generic.Dictionary<Track, int> cdTrackNumbers = new();
+    private object? fileTrackListSource;
+    private string fileTrackListHeading = "TRACKS";
 
     private void DiscMode_Click(object sender, RoutedEventArgs e) => SelectPlaybackMode(true);
     private void FileMode_Click(object sender, RoutedEventArgs e) => SelectPlaybackMode(false);
@@ -35,6 +41,7 @@ public partial class MainWindow
         if (selectDisc)
         {
             if (output != null || reader != null) DisposeAudio();
+            ShowCdTrackList();
             ShowNoDisc();
             cdLastOpenAttemptUtc = DateTime.MinValue;
             UpdateDiscIndicator();
@@ -42,6 +49,7 @@ public partial class MainWindow
         else
         {
             if (cdOpen) CloseCdSession(clearDisplay: false);
+            RestoreFileTrackList();
             PlayButton.Content = "▶";
             if (reader != null && currentIndex >= 0 && currentIndex < activeTracks.Count)
                 TrackTitle.Text = activeTracks[currentIndex].DisplayName;
@@ -57,9 +65,100 @@ public partial class MainWindow
         }
     }
 
+    private void ShowCdTrackList()
+    {
+        if (ReferenceEquals(FolderTracks.ItemsSource, cdListTracks)) return;
+        fileTrackListSource = FolderTracks.ItemsSource;
+        fileTrackListHeading = FolderContentsTitle.Text;
+        FolderTracks.ItemsSource = cdListTracks;
+        FolderContentsTitle.Text = "AUDIO CD TRACKS";
+    }
+
+    private void RestoreFileTrackList()
+    {
+        if (!ReferenceEquals(FolderTracks.ItemsSource, cdListTracks)) return;
+        FolderTracks.ItemsSource = fileTrackListSource;
+        FolderContentsTitle.Text = fileTrackListHeading;
+        fileTrackListSource = null;
+    }
+
+    private string CdTrackName(int number)
+    {
+        var title = cdReader?.TrackTitles.GetValueOrDefault(number);
+        return string.IsNullOrWhiteSpace(title)
+            ? $"AUDIO CD - TRACK {number:00}"
+            : title;
+    }
+
+    private void LoadCdTrackList()
+    {
+        ShowCdTrackList();
+        cdTrackNumbers.Clear();
+        cdListTracks.Clear();
+        if (cdReader == null) return;
+        foreach (var item in cdReader.Tracks.Where(t => t.IsAudio))
+        {
+            var track = new Track
+            {
+                Path = $"cd-track-{item.Number:00}",
+                DisplayNameOverride = $"{item.Number:00}  {CdTrackName(item.Number)}"
+            };
+            cdTrackNumbers[track] = item.Number;
+            cdListTracks.Add(track);
+        }
+        FolderContentsTitle.Text = "AUDIO CD TRACKS";
+        FolderTracks.SelectedItem = cdListTracks.FirstOrDefault();
+        cdCurrentTrack = cdReader.Tracks.First(t => t.IsAudio).Number;
+        cdReader.SelectTrack(cdCurrentTrack);
+        cdTrackDuration = cdReader.TotalTime;
+        TrackTitle.Text = CdTrackName(cdCurrentTrack);
+        PlayButton.Content = "▶";
+        UpdateCdDisplay();
+    }
+
+    private void SelectCdTrack(int number, bool startPlayback)
+    {
+        if (!cdOpen || cdReader == null) return;
+        if (startPlayback)
+        {
+            PlayCdTrack(number);
+            return;
+        }
+        DisposeCdOutput();
+        if (!cdReader.SelectTrack(number)) return;
+        cdCurrentTrack = number;
+        cdTrackDuration = cdReader.TotalTime;
+        cdPlaying = cdPaused = false;
+        TrackTitle.Text = CdTrackName(number);
+        PlayButton.Content = "▶";
+        SetLogoPulse(false);
+        UpdateCdDisplay();
+    }
+
+    private void CdTrack_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!discModeSelected || !cdOpen ||
+            FolderTracks.SelectedItem is not Track selected ||
+            !cdTrackNumbers.TryGetValue(selected, out var number)) return;
+        if (number != cdCurrentTrack) SelectCdTrack(number, startPlayback: false);
+    }
+
+    private int SelectedCdTrackNumber()
+    {
+        if (FolderTracks.SelectedItem is Track selected &&
+            cdTrackNumbers.TryGetValue(selected, out var number)) return number;
+        return cdCurrentTrack > 0 ? cdCurrentTrack : cdReader?.Tracks.First(t => t.IsAudio).Number ?? 1;
+    }
+
     private void ShowNoDisc()
     {
         if (!discModeSelected) return;
+        if (ReferenceEquals(FolderTracks.ItemsSource, cdListTracks))
+        {
+            cdListTracks.Clear();
+            cdTrackNumbers.Clear();
+            FolderContentsTitle.Text = "AUDIO CD TRACKS";
+        }
         TrackTitle.Text = "NO DISC";
         PlayButton.Content = "▶";
         SetLogoPulse(false);
@@ -118,12 +217,8 @@ public partial class MainWindow
             cdOpen = true;
             cdTrackCount = discovered.Tracks.Count;
             DiscIndicator.ToolTip = $"Audio CD found in {drive} (digital CD-DA)";
-            int track = discovered.Tracks.First(t => t.IsAudio).Number;
-            if (!PlayCdTrack(track))
-            {
-                TrackTitle.Text = "CD PLAYBACK ERROR";
-                // Keep the specific error captured by PlayCdTrack for diagnosis.
-            }
+            // Detect and list the disc without starting audio.
+            LoadCdTrackList();
             return;
         }
 
@@ -168,7 +263,15 @@ public partial class MainWindow
             player.Play();
             cdPlaying = true;
             cdPaused = false;
-            TrackTitle.Text = $"AUDIO CD - TRACK {track:00}";
+            TrackTitle.Text = CdTrackName(track);
+            var row = cdTrackNumbers.FirstOrDefault(pair => pair.Value == track).Key;
+            if (row != null)
+            {
+                if (FolderTracks.SelectedItem != row)
+                    FolderTracks.SelectedItem = row;
+                foreach (var item in cdListTracks) item.IsPlaying = item == row;
+                FolderTracks.ScrollIntoView(row);
+            }
             PlayButton.Content = "Ⅱ";
             SetLogoPulse(true);
             UpdateCdDisplay();
@@ -203,8 +306,7 @@ public partial class MainWindow
         if (!cdOpen || cdReader == null) return;
         if (cdOutput == null)
         {
-            PlayCdTrack(cdCurrentTrack > 0 ? cdCurrentTrack :
-                cdReader.Tracks.First(t => t.IsAudio).Number);
+            PlayCdTrack(SelectedCdTrackNumber());
             return;
         }
         if (cdOutput.PlaybackState == PlaybackState.Playing)
@@ -231,7 +333,7 @@ public partial class MainWindow
         if (audioTracks.Count == 0) return;
         int pos = audioTracks.IndexOf(cdCurrentTrack);
         int next = (Math.Max(pos, 0) + direction + audioTracks.Count) % audioTracks.Count;
-        PlayCdTrack(audioTracks[next]);
+        SelectCdTrack(audioTracks[next], startPlayback: cdPlaying || cdPaused);
     }
 
     private void StopCdPlayback(bool closeSession = false)
@@ -241,6 +343,7 @@ public partial class MainWindow
         SetLogoPulse(false);
         PlayButton.Content = "▶";
         if (cdReader != null) cdReader.Position = 0;
+        foreach (var track in cdListTracks) track.IsPlaying = false;
         if (closeSession) CloseCdSession(clearDisplay: true);
         else UpdateCdDisplay();
     }
@@ -254,6 +357,8 @@ public partial class MainWindow
         cdDrive = null;
         cdCurrentTrack = cdTrackCount = 0;
         cdTrackDuration = TimeSpan.Zero;
+        cdTrackNumbers.Clear();
+        cdListTracks.Clear();
         if (clearDisplay) ShowNoDisc();
     }
 
