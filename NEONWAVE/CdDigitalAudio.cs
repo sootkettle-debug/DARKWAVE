@@ -49,6 +49,11 @@ internal sealed class CdDigitalAudio : WaveStream
 
     public readonly record struct CdTrackEntry(int Number, int StartSector, int EndSector, bool IsAudio);
 
+    // CD-TEXT is optional; ordinary Red Book audio discs generally do not
+    // contain titles. Missing titles are represented by numbered track names.
+    public IReadOnlyDictionary<int, string> TrackTitles { get; private set; } =
+        new Dictionary<int, string>();
+
     public IReadOnlyList<CdTrackEntry> Tracks => tracks;
     public WaveFormat Format { get; } = new WaveFormat(44100, 16, 2);
     public override WaveFormat WaveFormat => Format;
@@ -116,12 +121,70 @@ internal sealed class CdDigitalAudio : WaveStream
                 throw new IOException("This disc has no digital audio tracks.");
 
             SelectTrack(tracks.Find(t => t.IsAudio).Number);
+            TrackTitles = ReadCdTextTitles();
         }
         catch
         {
             device.Dispose();
             throw;
         }
+    }
+
+    private IReadOnlyDictionary<int, string> ReadCdTextTitles()
+    {
+        // CDROM_READ_TOC_EX_FORMAT_CDTEXT (5), 4-byte request.
+        // Unsupported discs/drives simply return no metadata.
+        var query = new byte[] { 5, 0, 0, 0 };
+        var buffer = new byte[32768];
+        if (!DeviceIoControl(device, TocEx, query, query.Length,
+            buffer, buffer.Length, out int returned, IntPtr.Zero) ||
+            returned < 22) return new Dictionary<int, string>();
+
+        int advertised = 2 + (buffer[0] << 8) + buffer[1];
+        int usable = Math.Min(returned, advertised);
+        var titles = new Dictionary<int, System.Text.StringBuilder>();
+        int currentTrack = -1;
+        bool ended = false;
+
+        // Each descriptor has a 4-byte header, a 12-byte text payload,
+        // and a 2-byte checksum. Keep the first CD-TEXT language block.
+        for (int pos = 4; pos + 18 <= usable; pos += 18)
+        {
+            if (buffer[pos] != 0x80 || ((buffer[pos + 3] >> 4) & 7) != 0)
+                continue; // track/album title packets in block 0 only
+            int track = buffer[pos + 1] & 0x7f;
+            bool unicode = (buffer[pos + 3] & 0x80) != 0;
+            int dataStart = pos + 4;
+            int unit = unicode ? 2 : 1;
+            if (track != currentTrack)
+            {
+                currentTrack = track;
+                ended = false;
+            }
+            for (int p = dataStart; p + unit <= dataStart + 12; p += unit)
+            {
+                int ch = unicode ? (buffer[p] << 8) | buffer[p + 1] : buffer[p];
+                if (ch == 0)
+                {
+                    // A packet can contain more than one null-terminated title.
+                    // The following title belongs to the next track.
+                    ended = true;
+                    currentTrack++;
+                    continue;
+                }
+                if (ended) ended = false;
+                if (currentTrack < 1 || currentTrack > 99) continue;
+                if (char.IsControl((char)ch)) continue;
+                if (!titles.TryGetValue(currentTrack, out var title))
+                {
+                    title = new System.Text.StringBuilder();
+                    titles[currentTrack] = title;
+                }
+                title.Append((char)ch);
+            }
+        }
+        return titles.Where(p => p.Value.Length > 0)
+            .ToDictionary(p => p.Key, p => p.Value.ToString().Trim());
     }
 
     public bool IsDriveAvailable()
