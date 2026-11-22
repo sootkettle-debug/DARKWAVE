@@ -1,20 +1,31 @@
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 
 namespace NEONWAVE;
 
 public partial class MainWindow
 {
-    // DISC is the startup source so inserting an audio CD still starts it automatically.
     private bool discModeSelected = true;
+    private CdDigitalAudio? cdReader;
+    private WaveOutEvent? cdOutput;
+    private VolumeSampleProvider? cdVolume;
+    private string? cdDrive;
+    private bool cdOpen;
+    private bool cdPlaying;
+    private bool cdPaused;
+    private int cdCurrentTrack;
+    private int cdTrackCount;
+    private TimeSpan cdTrackDuration;
+    private DateTime cdLastOpenAttemptUtc = DateTime.MinValue;
 
     private void DiscMode_Click(object sender, RoutedEventArgs e) => SelectPlaybackMode(true);
-
     private void FileMode_Click(object sender, RoutedEventArgs e) => SelectPlaybackMode(false);
 
     private void SelectPlaybackMode(bool selectDisc)
@@ -24,9 +35,8 @@ public partial class MainWindow
         if (selectDisc)
         {
             if (output != null || reader != null) DisposeAudio();
-            cdAttemptedForInsertion = false;
-            lastReadyCdDrive = null;
             ShowNoDisc();
+            cdLastOpenAttemptUtc = DateTime.MinValue;
             UpdateDiscIndicator();
         }
         else
@@ -52,6 +62,7 @@ public partial class MainWindow
         if (!discModeSelected) return;
         TrackTitle.Text = "NO DISC";
         PlayButton.Content = "▶";
+        SetLogoPulse(false);
         ElapsedText.Text = DurationText.Text = "0:00";
         changingSeek = true;
         SeekSlider.Value = 0;
@@ -62,322 +73,224 @@ public partial class MainWindow
     {
         if (DiscIndicator == null || FileIndicator == null ||
             DiscModeButton == null || FileModeButton == null) return;
-        var offBrush = new SolidColorBrush(Color.FromRgb(81, 88, 92));
-        DiscIndicator.Foreground = discModeSelected ? currentAccentBrush : offBrush;
-        FileIndicator.Foreground = discModeSelected ? offBrush : currentAccentBrush;
-        DiscIndicator.Effect = discModeSelected
-            ? new System.Windows.Media.Effects.DropShadowEffect
-            {
-                Color = currentAccentColor, BlurRadius = 8, ShadowDepth = 0, Opacity = 0.85
-            } : null;
-        FileIndicator.Effect = !discModeSelected
-            ? new System.Windows.Media.Effects.DropShadowEffect
-            {
-                Color = currentAccentColor, BlurRadius = 8, ShadowDepth = 0, Opacity = 0.85
-            } : null;
-        DiscModeButton.Foreground = discModeSelected ? currentAccentBrush : offBrush;
-        FileModeButton.Foreground = discModeSelected ? offBrush : currentAccentBrush;
-    }
-
-    // MCI provides Windows' native audio-CD transport; file playback still uses NAudio.
-    private const string CdAlias = "CompactDarkAudioDisc";
-    private string? cdDrive;
-    private string? lastReadyCdDrive;
-    private bool cdAttemptedForInsertion;
-    private bool cdOpen;
-    private bool cdPlaying;
-    private bool cdPaused;
-    private int cdCurrentTrack;
-    private int cdTrackCount;
-    private TimeSpan cdTrackDuration;
-    private readonly Stopwatch cdPlayWatch = new();
-    private TimeSpan cdElapsedBeforePlay;
-    private DateTime cdLastOpenAttemptUtc = DateTime.MinValue;
-
-    [System.Runtime.InteropServices.DllImport("winmm.dll", EntryPoint = "mciSendStringW",
-        CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
-    private static extern uint MciQueryString(string command, StringBuilder answer,
-        uint answerCapacity, IntPtr callback);
-
-    private static string? CdQuery(string command)
-    {
-        var result = new StringBuilder(128);
-        return MciQueryString(command, result, (uint)result.Capacity, IntPtr.Zero) == 0
-            ? result.ToString().Trim()
-            : null;
-    }
-
-    private static uint CdCommand(string command) =>
-        MciSendString(command, IntPtr.Zero, 0, IntPtr.Zero);
-
-    private static TimeSpan? ParseCdTime(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value)) return null;
-        // TMSF is track:minute:second:frame; some drivers omit the track field.
-        var parts = value.Split(':');
-        if (parts.Length < 3 ||
-            !int.TryParse(parts[^3], out int minutes) ||
-            !int.TryParse(parts[^2], out int seconds) ||
-            !int.TryParse(parts[^1], out int frames)) return null;
-        return TimeSpan.FromSeconds(minutes * 60 + seconds + frames / 75.0);
+        var off = new SolidColorBrush(Color.FromRgb(81, 88, 92));
+        DiscIndicator.Foreground = discModeSelected ? currentAccentBrush : off;
+        FileIndicator.Foreground = discModeSelected ? off : currentAccentBrush;
+        DiscIndicator.Effect = discModeSelected ? new DropShadowEffect
+            { Color = currentAccentColor, BlurRadius = 8, ShadowDepth = 0, Opacity = .85 } : null;
+        FileIndicator.Effect = !discModeSelected ? new DropShadowEffect
+            { Color = currentAccentColor, BlurRadius = 8, ShadowDepth = 0, Opacity = .85 } : null;
+        DiscModeButton.Foreground = discModeSelected ? currentAccentBrush : off;
+        FileModeButton.Foreground = discModeSelected ? off : currentAccentBrush;
     }
 
     private void PollAudioCd(string[] opticalDrives)
     {
         if (!discModeSelected) return;
-
-        if (opticalDrives.Length == 0)
-        {
-            if (cdOpen) CloseCdSession(clearDisplay: false);
-            lastReadyCdDrive = null;
-            cdAttemptedForInsertion = false;
-            ShowNoDisc();
-            DiscIndicator.ToolTip = "No optical CD/DVD drive detected";
-            return;
-        }
-
-        // A CD-DA disc often has no readable filesystem, so IsReady cannot
-        // distinguish an empty tray from a playable audio CD.
         if (cdOpen)
         {
-            var present = CdQuery($"status {CdAlias} media present");
-            if (present == "true" || present == "1")
-            {
-                DiscIndicator.ToolTip = $"Audio CD in {cdDrive}";
-                return;
-            }
-            CloseCdSession(clearDisplay: false);
-            lastReadyCdDrive = null;
-            cdAttemptedForInsertion = false;
-            ShowNoDisc();
-        }
-
-        // Retry a closed/empty drive periodically. Avoid retrying MCI on each
-        // 200 ms playback refresh. This also detects later disc insertion.
-        if (DateTime.UtcNow - cdLastOpenAttemptUtc < TimeSpan.FromSeconds(3))
-            return;
-        cdLastOpenAttemptUtc = DateTime.UtcNow;
-
-        foreach (var driveName in opticalDrives)
-        {
-            if (!TryOpenAudioCd(driveName)) continue;
-            lastReadyCdDrive = driveName;
-            cdAttemptedForInsertion = true;
-            int firstAudioTrack = FindAudioTrack(1, 1);
-            if (firstAudioTrack > 0)
-            {
-                if (!PlayCdTrack(firstAudioTrack))
-                    DiscIndicator.ToolTip = $"Audio CD detected in {driveName}, playback failed";
-            }
-            else
+            // A CD-DA disc has no filesystem. Reopen the TOC only when the
+            // drive reports loss of media, not on every 2-second UI tick.
+            if (cdReader != null && !cdReader.IsDriveAvailable())
             {
                 CloseCdSession(clearDisplay: false);
                 ShowNoDisc();
+                cdLastOpenAttemptUtc = DateTime.MinValue;
+            }
+            else return;
+        }
+
+        if (opticalDrives.Length == 0)
+        {
+            ShowNoDisc();
+            DiscIndicator.ToolTip = "No CD/DVD drive detected by Windows";
+            return;
+        }
+        if (DateTime.UtcNow - cdLastOpenAttemptUtc < TimeSpan.FromSeconds(3)) return;
+        cdLastOpenAttemptUtc = DateTime.UtcNow;
+
+        foreach (var drive in opticalDrives)
+        {
+            if (!CdDigitalAudio.TryOpen(drive, out var discovered) || discovered == null)
+                continue;
+            cdReader = discovered;
+            cdDrive = drive;
+            cdOpen = true;
+            cdTrackCount = discovered.Tracks.Count;
+            DiscIndicator.ToolTip = $"Audio CD found in {drive} (digital CD-DA)";
+            int track = discovered.Tracks.First(t => t.IsAudio).Number;
+            if (!PlayCdTrack(track))
+            {
+                TrackTitle.Text = "CD PLAYBACK ERROR";
+                DiscIndicator.ToolTip = "Disc found, but the drive cannot stream CD audio";
             }
             return;
         }
 
         ShowNoDisc();
-        DiscIndicator.ToolTip = "Optical drive found, no readable audio CD detected";
-    }
-
-    private bool TryOpenAudioCd(string driveName)
-    {
-        var driveLetter = driveName.TrimEnd('\\');
-        if (CdCommand($"open {driveLetter} type cdaudio alias {CdAlias}") != 0)
-            return false;
-
-        // The command can open a CD device even with an empty tray. Check both
-        // its media status and track table, not the filesystem readiness flag.
-        var media = CdQuery($"status {CdAlias} media present");
-        if ((media != "true" && media != "1") ||
-            CdCommand($"set {CdAlias} time format tmsf") != 0 ||
-            !int.TryParse(CdQuery($"status {CdAlias} number of tracks"), out int tracks) ||
-            tracks < 1)
-        {
-            CdCommand($"close {CdAlias}");
-            return false;
-        }
-        cdTrackCount = tracks;
-        cdDrive = driveName;
-        cdOpen = true;
-        cdCurrentTrack = 0;
-        return true;
-    }
-
-    private int FindAudioTrack(int start, int direction)
-    {
-        if (!cdOpen || cdTrackCount < 1) return -1;
-        for (int i = start; i >= 1 && i <= cdTrackCount; i += direction)
-        {
-            if (string.Equals(CdQuery($"status {CdAlias} type track {i}"),
-                    "audio", StringComparison.OrdinalIgnoreCase))
-                return i;
-        }
-        return -1;
+        DiscIndicator.ToolTip = "Drive found, but CD audio TOC was unavailable";
     }
 
     private bool PlayCdTrack(int track, TimeSpan? offset = null)
     {
-        if (!cdOpen || track < 1 || track > cdTrackCount) return false;
-        if (FindAudioTrack(track, 1) != track) return false;
-
-        // A newly inserted disc takes priority over any previously playing file.
-        if (reader != null || output != null) DisposeAudio();
-        CdCommand($"stop {CdAlias}");
-        var start = offset.GetValueOrDefault();
-        string startPosition = $"{track}:{(int)start.TotalMinutes}:{start.Seconds}:{(int)Math.Round(start.Milliseconds * 75.0 / 1000.0)}";
-        string end = track < cdTrackCount ? $" to {track + 1}:0:0:0" : "";
-        if (CdCommand($"play {CdAlias} from {startPosition}{end}") != 0)
+        if (!cdOpen || cdReader == null || !cdReader.SelectTrack(track)) return false;
+        try
         {
+            if (reader != null || output != null) DisposeAudio();
+            DisposeCdOutput();
+            cdReader.Position = Math.Clamp((long)(offset.GetValueOrDefault().TotalSeconds * cdReader.WaveFormat.AverageBytesPerSecond), 0L, cdReader.Length);
+            cdCurrentTrack = track;
+            cdTrackDuration = cdReader.TotalTime;
+            var pcm = new WaveToSampleProvider(cdReader);
+            cdVolume = new VolumeSampleProvider(pcm) { Volume = (float)(volumePercent / 100.0) };
+            equalizer = new FiveBandEqualizer(cdVolume, eqGainDb);
+            var player = new WaveOutEvent();
+            cdOutput = player;
+            player.Init(new SampleToWaveProvider(equalizer));
+            player.PlaybackStopped += (_, args) =>
+            {
+                if (!ReferenceEquals(cdOutput, player)) return;
+                Dispatcher.BeginInvoke(() =>
+                {
+                    if (!ReferenceEquals(cdOutput, player)) return;
+                    if (args.Exception != null)
+                    {
+                        cdPlaying = false;
+                        TrackTitle.Text = "CD READ ERROR";
+                        DiscIndicator.ToolTip = args.Exception.Message;
+                        StopCdPlayback();
+                    }
+                });
+            };
+            player.Play();
+            cdPlaying = true;
+            cdPaused = false;
+            TrackTitle.Text = $"AUDIO CD - TRACK {track:00}";
+            PlayButton.Content = "Ⅱ";
+            SetLogoPulse(true);
+            UpdateCdDisplay();
+            return true;
+        }
+        catch (Exception error)
+        {
+            DisposeCdOutput();
             cdPlaying = cdPaused = false;
+            DiscIndicator.ToolTip = $"Audio CD error: {error.Message}";
+            TrackTitle.Text = "CD PLAYBACK ERROR";
             PlayButton.Content = "▶";
             return false;
         }
+    }
 
-        cdCurrentTrack = track;
-        cdTrackDuration = ParseCdTime(CdQuery($"status {CdAlias} length track {track}"))
-                           ?? TimeSpan.Zero;
-        cdElapsedBeforePlay = start;
-        cdPlayWatch.Restart();
-        cdPlaying = true;
-        cdPaused = false;
-        TrackTitle.Text = $"AUDIO CD - TRACK {track:00}";
-        PlayButton.Content = "Ⅱ";
-        SetLogoPulse(true);
-        UpdateCdDisplay();
-        return true;
+    private void DisposeCdOutput()
+    {
+        var oldOutput = cdOutput;
+        cdOutput = null;
+        if (oldOutput != null)
+        {
+            try { oldOutput.Stop(); } catch (Exception) { }
+            oldOutput.Dispose();
+        }
+        cdVolume = null;
+        equalizer = null;
     }
 
     private void PauseOrResumeCd()
     {
-        if (!cdOpen || cdCurrentTrack < 1) return;
-        if (cdPlaying && !cdPaused)
+        if (!cdOpen || cdReader == null) return;
+        if (cdOutput == null)
         {
-            if (CdCommand($"pause {CdAlias}") == 0)
-            {
-                cdElapsedBeforePlay += cdPlayWatch.Elapsed;
-                cdPlayWatch.Reset();
-                cdPaused = true;
-                PlayButton.Content = "▶";
-                SetLogoPulse(false);
-            }
+            PlayCdTrack(cdCurrentTrack > 0 ? cdCurrentTrack :
+                cdReader.Tracks.First(t => t.IsAudio).Number);
+            return;
         }
-        else if (cdPaused)
+        if (cdOutput.PlaybackState == PlaybackState.Playing)
         {
-            if (CdCommand($"resume {CdAlias}") != 0)
-            {
-                PlayCdTrack(cdCurrentTrack, cdElapsedBeforePlay);
-                return;
-            }
+            cdOutput.Pause();
+            cdPaused = true;
+            PlayButton.Content = "▶";
+            SetLogoPulse(false);
+        }
+        else
+        {
+            cdOutput.Play();
             cdPaused = false;
-            cdPlayWatch.Restart();
+            cdPlaying = true;
             PlayButton.Content = "Ⅱ";
             SetLogoPulse(true);
         }
-        else
-            PlayCdTrack(cdCurrentTrack);
     }
 
     private void MoveCdTrack(int direction)
     {
-        if (!cdOpen) return;
-        int next = FindAudioTrack(Math.Clamp(cdCurrentTrack + direction, 1, cdTrackCount), direction);
-        if (next < 0 && direction > 0) next = FindAudioTrack(1, 1);
-        if (next < 0 && direction < 0) next = FindAudioTrack(cdTrackCount, -1);
-        if (next > 0) PlayCdTrack(next);
+        if (cdReader == null) return;
+        var audioTracks = cdReader.Tracks.Where(t => t.IsAudio).Select(t => t.Number).ToList();
+        if (audioTracks.Count == 0) return;
+        int pos = audioTracks.IndexOf(cdCurrentTrack);
+        int next = (Math.Max(pos, 0) + direction + audioTracks.Count) % audioTracks.Count;
+        PlayCdTrack(audioTracks[next]);
     }
 
     private void StopCdPlayback(bool closeSession = false)
     {
-        if (!cdOpen) return;
-        CdCommand($"stop {CdAlias}");
-        cdPlaying = false;
-        cdPaused = false;
-        cdPlayWatch.Reset();
-        cdElapsedBeforePlay = TimeSpan.Zero;
+        DisposeCdOutput();
+        cdPlaying = cdPaused = false;
         SetLogoPulse(false);
         PlayButton.Content = "▶";
+        if (cdReader != null) cdReader.Position = 0;
         if (closeSession) CloseCdSession(clearDisplay: true);
         else UpdateCdDisplay();
     }
 
     private void CloseCdSession(bool clearDisplay)
     {
-        if (!cdOpen) return;
-        CdCommand($"stop {CdAlias}");
-        CdCommand($"close {CdAlias}");
+        DisposeCdOutput();
+        cdReader?.Dispose();
+        cdReader = null;
         cdOpen = cdPlaying = cdPaused = false;
         cdDrive = null;
         cdCurrentTrack = cdTrackCount = 0;
-        cdTrackDuration = cdElapsedBeforePlay = TimeSpan.Zero;
-        cdPlayWatch.Reset();
-        SetLogoPulse(false);
-        if (clearDisplay && reader == null)
-        {
-            PlayButton.Content = "▶";
-            TrackTitle.Text = "NO TRACK LOADED";
-            ElapsedText.Text = DurationText.Text = "0:00";
-            changingSeek = true;
-            SeekSlider.Value = 0;
-            changingSeek = false;
-        }
+        cdTrackDuration = TimeSpan.Zero;
+        if (clearDisplay) ShowNoDisc();
     }
 
     private void UpdateCdDisplay()
     {
-        if (!cdOpen || cdCurrentTrack < 1) return;
-        TimeSpan elapsed = cdElapsedBeforePlay + (cdPaused ? TimeSpan.Zero : cdPlayWatch.Elapsed);
-        // Some drivers report TMSF positions accurately; use them where possible.
-        if (!cdPaused && cdPlaying)
-        {
-            var position = ParseCdTime(CdQuery($"status {CdAlias} position"));
-            if (position.HasValue && position.Value >= TimeSpan.Zero &&
-                (cdTrackDuration == TimeSpan.Zero || position.Value <= cdTrackDuration + TimeSpan.FromSeconds(2)))
-                elapsed = position.Value;
-        }
-
-        if (cdTrackDuration > TimeSpan.Zero && elapsed > cdTrackDuration)
-            elapsed = cdTrackDuration;
-        ElapsedText.Text = FormatTime(elapsed);
+        if (!cdOpen || cdReader == null) return;
+        ElapsedText.Text = FormatTime(cdReader.CurrentTime);
         DurationText.Text = FormatTime(cdTrackDuration);
+        if (draggingSeek) return;
         changingSeek = true;
         SeekSlider.Value = cdTrackDuration.TotalSeconds > 0
-            ? Math.Clamp(elapsed.TotalSeconds / cdTrackDuration.TotalSeconds * 100, 0, 100)
-            : 0;
+            ? Math.Clamp(cdReader.CurrentTime.TotalSeconds / cdTrackDuration.TotalSeconds * 100, 0, 100) : 0;
         changingSeek = false;
     }
 
     private void TickCdPlayback()
     {
-        if (!cdOpen || cdCurrentTrack < 1) return;
-        if (cdPlaying && !cdPaused)
+        if (!cdOpen || cdReader == null) return;
+        if (cdPlaying && !cdPaused && cdReader.Position >= cdReader.Length)
         {
-            string? mode = CdQuery($"status {CdAlias} mode");
-            if (string.Equals(mode, "stopped", StringComparison.OrdinalIgnoreCase) &&
-                cdPlayWatch.Elapsed >= TimeSpan.FromSeconds(1))
-            {
-                int next = FindAudioTrack(cdCurrentTrack + 1, 1);
-                if (next > 0) PlayCdTrack(next);
-                else StopCdPlayback();
-                return;
-            }
+            var tracks = cdReader.Tracks.Where(t => t.IsAudio).Select(t => t.Number).ToList();
+            int index = tracks.IndexOf(cdCurrentTrack);
+            if (index >= 0 && index + 1 < tracks.Count)
+                PlayCdTrack(tracks[index + 1]);
+            else
+                StopCdPlayback();
         }
         UpdateCdDisplay();
     }
 
-    private void SeekCdToPercent(double percentage)
+    private void SeekCdToPercent(double percent)
     {
-        if (!cdOpen || cdCurrentTrack < 1 || cdTrackDuration <= TimeSpan.Zero) return;
+        if (!cdOpen || cdReader == null || cdTrackDuration <= TimeSpan.Zero) return;
+        var offset = TimeSpan.FromSeconds(Math.Clamp(percent, 0, 99.5) * cdTrackDuration.TotalSeconds / 100);
         bool wasPaused = cdPaused;
-        var offset = TimeSpan.FromSeconds(Math.Clamp(percentage, 0, 99.5) / 100 * cdTrackDuration.TotalSeconds);
         if (PlayCdTrack(cdCurrentTrack, offset) && wasPaused) PauseOrResumeCd();
     }
 
     private void ApplyCdVolumeIfSupported()
     {
-        if (!cdOpen) return;
-        // CDAudio MCI drivers vary: this is best-effort, not guaranteed.
-        CdCommand($"setaudio {CdAlias} volume to {(int)(volumePercent * 10)}");
+        if (cdVolume != null) cdVolume.Volume = (float)(volumePercent / 100.0);
     }
 }
