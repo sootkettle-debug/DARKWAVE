@@ -26,12 +26,7 @@ public partial class MainWindow
             if (output != null || reader != null) DisposeAudio();
             cdAttemptedForInsertion = false;
             lastReadyCdDrive = null;
-            TrackTitle.Text = "NO DISC";
-            ElapsedText.Text = DurationText.Text = "0:00";
-            changingSeek = true;
-            SeekSlider.Value = 0;
-            changingSeek = false;
-            PlayButton.Content = "▶";
+            ShowNoDisc();
             UpdateDiscIndicator();
         }
         else
@@ -50,6 +45,17 @@ public partial class MainWindow
             }
             UpdateSourceModeDisplays();
         }
+    }
+
+    private void ShowNoDisc()
+    {
+        if (!discModeSelected) return;
+        TrackTitle.Text = "NO DISC";
+        PlayButton.Content = "▶";
+        ElapsedText.Text = DurationText.Text = "0:00";
+        changingSeek = true;
+        SeekSlider.Value = 0;
+        changingSeek = false;
     }
 
     private void UpdateSourceModeDisplays()
@@ -127,7 +133,7 @@ public partial class MainWindow
             if (cdOpen) CloseCdSession(clearDisplay: false);
             lastReadyCdDrive = null;
             cdAttemptedForInsertion = false;
-            TrackTitle.Text = "NO DISC";
+            ShowNoDisc();
             return;
         }
 
@@ -144,7 +150,7 @@ public partial class MainWindow
                     StringComparison.OrdinalIgnoreCase))
             {
                 CloseCdSession(clearDisplay: false);
-                TrackTitle.Text = "NO DISC";
+                ShowNoDisc();
                 cdAttemptedForInsertion = false;
             }
             else return;
