@@ -18,5 +18,6 @@
     <Resource Include="Fonts\DSEG14Classic-Italic.ttf" />
     <Resource Include="Fonts\DSEG-LICENSE.txt" />
     <Resource Include="Assets\DarkwaveLogo.png" />
+    <Resource Include="Assets\CompactDarkMetallicLogo.png" />
   </ItemGroup>
 </Project>

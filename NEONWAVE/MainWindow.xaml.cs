@@ -130,24 +130,8 @@ public partial class MainWindow : Window
 
     private void AlignTrackGlassPanel()
     {
-        if (!UpperHeaderGrid.IsLoaded ||
-            UpperPaneBorder.ActualWidth <= 0 ||
-            AlbumArtScreen.ActualWidth <= 0) return;
-
-        // XAML stretches the glass panel across both header columns.
-        // Do not assign a fixed width, which would override the layout.
-
-        // Keep the DARKWAVE+ lettering vertically centred between the upper
-        // pane's top edge and the top of the track-title glass panel.
-        if (DARKWAVELogoGroup.ActualHeight > 0)
-        {
-            var panelTop = TrackGlassPanel.TranslatePoint(
-                new Point(0, 0), UpperHeaderGrid).Y;
-            var logoCentre = DARKWAVELogoGroup.TranslatePoint(
-                new Point(0, DARKWAVELogoGroup.ActualHeight / 2), UpperHeaderGrid).Y;
-            var desiredCentre = panelTop / 2;
-            DARKWAVELogoOffset.Y += desiredCentre - logoCentre;
-        }
+        // The transparent logo and title glass are aligned by the XAML Grid.
+        // No album-art sizing or offset calculation remains.
     }
 
     private void PlaybackControlsPanel_SizeChanged(object sender, SizeChangedEventArgs e) =>

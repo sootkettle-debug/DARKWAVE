@@ -87,7 +87,7 @@
 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="94"/></Grid.ColumnDefinitions>
 <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
 <Grid Height="72"/>
-<!-- Position glass panel 10px beneath the album artwork (art bottom at 87px, glass top at 97px); the time row begins 10px after the glass panel. -->
+<!-- Keep the title glass panel beneath the new transparent logo without changing pane dimensions. -->
 <Border x:Name="TrackGlassPanel" HorizontalAlignment="Stretch" Height="25.5" Margin="0,25,0,0" Padding="10,2,10,2"
         CornerRadius="7" BorderBrush="#59666B" BorderThickness="1">
  <Border.Background>
@@ -107,91 +107,12 @@
  </Viewbox>
 </Border>
 </StackPanel>
-<!-- Album art only. The former centred position left roughly 22px of top space;
-     retaining 40% of that space moves the artwork up by about 60%. -->
-<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,9,0,0">
- <Border x:Name="AlbumArtScreen" Width="78" Height="78" CornerRadius="3" Background="#0B1011" BorderBrush="#FFA43A" BorderThickness="1"><Viewbox><TextBlock Text="♫" Foreground="#FFA43A" FontSize="43"/></Viewbox></Border>
-</StackPanel>
-<StackPanel x:Name="DARKWAVELogoGroup" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" IsHitTestVisible="False"><StackPanel.RenderTransform><TranslateTransform x:Name="DARKWAVELogoOffset" Y="2"/></StackPanel.RenderTransform>
- <Grid VerticalAlignment="Center">
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top">
-  <TextBlock.Foreground>
-   <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-    <GradientStop Color="#A7B1B6" Offset="0.00"/>
-    <GradientStop Color="#5C666C" Offset="0.08"/>
-    <GradientStop Color="#1D2327" Offset="0.18"/>
-    <GradientStop Color="#060809" Offset="0.40"/>
-    <GradientStop Color="#111518" Offset="0.68"/>
-    <GradientStop Color="#000000" Offset="1.00"/>
-   </LinearGradientBrush>
-  </TextBlock.Foreground>
-  <TextBlock.Effect><DropShadowEffect BlurRadius="7" ShadowDepth="1" Opacity="0.45" Color="#000000"/></TextBlock.Effect>
- </TextBlock>
- <!-- Polished-glass highlight, fading into the black surface. -->
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top" Opacity="0.22" Margin="0,-1,0,0">
-  <TextBlock.Foreground>
-   <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-    <GradientStop Color="#FFFFFF" Offset="0.00"/>
-    <GradientStop Color="#D9E2E6" Offset="0.10"/>
-    <GradientStop Color="#80FFFFFF" Offset="0.18"/>
-    <GradientStop Color="#00FFFFFF" Offset="0.34"/>
-    <GradientStop Color="#00FFFFFF" Offset="1.00"/>
-   </LinearGradientBrush>
-  </TextBlock.Foreground>
- </TextBlock>
- <!-- Subtle lower reflection, without the previous hard outline. -->
- <TextBlock Text="DARKWAVE" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="79.2" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top" Opacity="0.10" Margin="0,2,0,0">
-  <TextBlock.Foreground>
-   <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-    <GradientStop Color="#00000000" Offset="0.00"/>
-    <GradientStop Color="#00000000" Offset="0.45"/>
-    <GradientStop Color="#7E8B92" Offset="0.72"/>
-    <GradientStop Color="#C8D2D6" Offset="0.90"/>
-    <GradientStop Color="#00000000" Offset="1.00"/>
-   </LinearGradientBrush>
-  </TextBlock.Foreground>
- </TextBlock>
- </Grid>
- <Grid x:Name="LogoPlusMark" VerticalAlignment="Center" Margin="4,0,0,0">
- <TextBlock Text="+" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="58" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top">
-  <TextBlock.Foreground>
-   <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-    <GradientStop Color="#A7B1B6" Offset="0.00"/>
-    <GradientStop Color="#5C666C" Offset="0.08"/>
-    <GradientStop Color="#1D2327" Offset="0.18"/>
-    <GradientStop Color="#060809" Offset="0.40"/>
-    <GradientStop Color="#111518" Offset="0.68"/>
-    <GradientStop Color="#000000" Offset="1.00"/>
-   </LinearGradientBrush>
-  </TextBlock.Foreground>
-  <TextBlock.Effect><DropShadowEffect BlurRadius="7" ShadowDepth="1" Opacity="0.45" Color="#000000"/></TextBlock.Effect>
- </TextBlock>
- <!-- Polished-glass highlight, fading into the black surface. -->
- <TextBlock Text="+" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="58" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top" Opacity="0.22" Margin="0,-1,0,0">
-  <TextBlock.Foreground>
-   <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-    <GradientStop Color="#FFFFFF" Offset="0.00"/>
-    <GradientStop Color="#D9E2E6" Offset="0.10"/>
-    <GradientStop Color="#80FFFFFF" Offset="0.18"/>
-    <GradientStop Color="#00FFFFFF" Offset="0.34"/>
-    <GradientStop Color="#00FFFFFF" Offset="1.00"/>
-   </LinearGradientBrush>
-  </TextBlock.Foreground>
- </TextBlock>
- <!-- Subtle lower reflection, without the previous hard outline. -->
- <TextBlock Text="+" FontFamily="pack://application:,,,/Fonts/#Pirata One" FontSize="58" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Top" Opacity="0.10" Margin="0,2,0,0">
-  <TextBlock.Foreground>
-   <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-    <GradientStop Color="#00000000" Offset="0.00"/>
-    <GradientStop Color="#00000000" Offset="0.45"/>
-    <GradientStop Color="#7E8B92" Offset="0.72"/>
-    <GradientStop Color="#C8D2D6" Offset="0.90"/>
-    <GradientStop Color="#00000000" Offset="1.00"/>
-   </LinearGradientBrush>
-  </TextBlock.Foreground>
- </TextBlock>
- </Grid>
-</StackPanel>
+<!-- Transparent metallic DARKWAVE+ logo, replacing the old wordmark and album art. -->
+<Image x:Name="MetallicDarkwaveLogo" Grid.Column="0" Grid.ColumnSpan="2"
+       Source="/Assets/CompactDarkMetallicLogo.png"
+       Width="530" Height="85" Stretch="Uniform"
+       HorizontalAlignment="Center" VerticalAlignment="Top"
+       Margin="0,3,0,0" IsHitTestVisible="False"/>
 </Grid><Grid Grid.Row="1" Margin="0,10,0,0"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="20"/></Grid.RowDefinitions><TextBlock x:Name="ElapsedText" Grid.Row="0" Text="0:00" Foreground="#B5A08D" FontSize="10" HorizontalAlignment="Left" Margin="9,0,0,0"/><TextBlock x:Name="DurationText" Grid.Row="0" Text="0:00" Foreground="#B5A08D" FontSize="10" HorizontalAlignment="Right" Margin="0,0,9,0"/><Slider x:Name="SeekSlider" Grid.Row="1" Style="{StaticResource GlossySeekSliderStyle}" Minimum="0" Maximum="100" Value="0" Margin="9,0,9,0" VerticalAlignment="Center" Foreground="#263238" Background="#11171A" ValueChanged="SeekSlider_ValueChanged" PreviewMouseLeftButtonDown="SeekSlider_MouseDown" PreviewMouseLeftButtonUp="SeekSlider_MouseUp"/></Grid><Border x:Name="PlaybackControlsPanel" SizeChanged="PlaybackControlsPanel_SizeChanged" Grid.Row="2" Background="#151B1E" BorderBrush="#455054" BorderThickness="1" CornerRadius="8" Padding="7" Margin="0,12,0,0"><Grid>
 <TextBlock x:Name="ReadyStatusText" Text="Darkwave - Ready to play" Foreground="#D5A76D" FontFamily="Segoe Script" FontStyle="Italic" FontSize="13" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,9" TextTrimming="CharacterEllipsis"/>
 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
