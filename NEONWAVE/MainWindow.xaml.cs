@@ -523,30 +523,31 @@ public partial class MainWindow : Window
     {
         if (DiscIndicator == null) return;
 
-        // IsReady means the drive reports readable media, not merely an attached drive.
-        // Polling handles insertion/removal even when the player has no focus.
-        bool discPresent = false;
-        string? readyDrive = null;
+        // Audio CDs often have no mounted filesystem. DriveInfo.IsReady is
+        // therefore NOT a reliable test for whether an audio disc is inserted.
+        // Enumerate the optical drives and let the CD-audio device probe media.
+        string[] opticalDrives;
         try
         {
-            foreach (var drive in DriveInfo.GetDrives())
-            {
-                if (drive.DriveType != DriveType.CDRom) continue;
-                try
-                {
-                    if (drive.IsReady) { discPresent = true; readyDrive = drive.Name; break; }
-                }
-                catch (IOException) { /* Drive unavailable or tray open. */ }
-                catch (UnauthorizedAccessException) { /* Media inaccessible. */ }
-            }
+            opticalDrives = DriveInfo.GetDrives()
+                .Where(d => d.DriveType == DriveType.CDRom)
+                .Select(d => d.Name)
+                .ToArray();
         }
-        catch (IOException) { /* Keep the indicator dark if detection fails. */ }
+        catch (IOException)
+        {
+            opticalDrives = [];
+        }
+        catch (UnauthorizedAccessException)
+        {
+            opticalDrives = [];
+        }
 
-        PollAudioCd(discPresent, readyDrive);
+        PollAudioCd(opticalDrives);
         UpdateSourceModeDisplays();
     }
 
-    [DllImport("winmm.dll", EntryPoint = "mciSendStringW", CharSet = CharSet.Unicode)]
+        [DllImport("winmm.dll", EntryPoint = "mciSendStringW", CharSet = CharSet.Unicode)]
     private static extern uint MciSendString(string command, IntPtr returnValue, uint returnLength, IntPtr callback);
 
     private void EjectCd_Click(object sender, RoutedEventArgs e)
