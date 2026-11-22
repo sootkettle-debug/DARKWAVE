@@ -194,10 +194,19 @@
 </StackPanel>
 </Grid><Grid Grid.Row="1" Margin="0,10,0,0"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="20"/></Grid.RowDefinitions><TextBlock x:Name="ElapsedText" Grid.Row="0" Text="0:00" Foreground="#B5A08D" FontSize="10" HorizontalAlignment="Left" Margin="9,0,0,0"/><TextBlock x:Name="DurationText" Grid.Row="0" Text="0:00" Foreground="#B5A08D" FontSize="10" HorizontalAlignment="Right" Margin="0,0,9,0"/><Slider x:Name="SeekSlider" Grid.Row="1" Style="{StaticResource GlossySeekSliderStyle}" Minimum="0" Maximum="100" Value="0" Margin="9,0,9,0" VerticalAlignment="Center" Foreground="#263238" Background="#11171A" ValueChanged="SeekSlider_ValueChanged" PreviewMouseLeftButtonDown="SeekSlider_MouseDown" PreviewMouseLeftButtonUp="SeekSlider_MouseUp"/></Grid><Border x:Name="PlaybackControlsPanel" SizeChanged="PlaybackControlsPanel_SizeChanged" Grid.Row="2" Background="#151B1E" BorderBrush="#455054" BorderThickness="1" CornerRadius="8" Padding="7" Margin="0,12,0,0"><Grid>
 <TextBlock x:Name="ReadyStatusText" Text="Darkwave - Ready to play" Foreground="#D5A76D" FontFamily="Segoe Script" FontStyle="Italic" FontSize="13" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,9" TextTrimming="CharacterEllipsis"/>
-<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-  <!-- All four control groups are centred together as a single row whenever the window resizes. -->
+<Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+  <!-- Three equally weighted spacer columns expand between four fixed-size groups. -->
+  <Grid.ColumnDefinitions>
+    <ColumnDefinition Width="Auto"/>
+    <ColumnDefinition Width="*" MinWidth="9"/>
+    <ColumnDefinition Width="Auto"/>
+    <ColumnDefinition Width="*" MinWidth="9"/>
+    <ColumnDefinition Width="Auto"/>
+    <ColumnDefinition Width="*" MinWidth="9"/>
+    <ColumnDefinition Width="Auto"/>
+  </Grid.ColumnDefinitions>
   <!-- Group 1: five-band EQ plus transport and CD eject -->
-  <StackPanel Orientation="Vertical" Margin="0,0,9,0" VerticalAlignment="Center">
+  <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,6"><StackPanel Width="40.5" HorizontalAlignment="Center" ToolTip="L EQ: drag up/down or scroll to adjust (-12 to +12 dB)">
 <TextBlock Text="L" FontWeight="Bold" FontSize="9" Foreground="{DynamicResource AccentBrush}" TextAlignment="Center" Margin="0,0,0,1"/>
 <Grid x:Name="EqKnob0" Tag="0" Width="41" Height="41" HorizontalAlignment="Center" Background="Transparent" Cursor="Hand" MouseLeftButtonDown="EqKnob_MouseDown" MouseMove="EqKnob_MouseMove" MouseLeftButtonUp="EqKnob_MouseUp" LostMouseCapture="EqKnob_LostMouseCapture" MouseWheel="EqKnob_MouseWheel">
@@ -245,11 +254,11 @@
     </StackPanel>
   </StackPanel>
   <!-- Group 2: accent colour buttons -->
-  <StackPanel Orientation="Vertical" Margin="0,0,9,0" VerticalAlignment="Center">
+  <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center">
     <StackPanel x:Name="AccentButtonsPanel" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0"><StackPanel.RenderTransform><TranslateTransform x:Name="AccentButtonsOffset"/></StackPanel.RenderTransform><Button Click="AccentPurple_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Purple accent"><Border Width="6" Height="6" CornerRadius="4" Background="#7027A8"/></Button><Button Click="AccentGreen_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Green accent"><Border Width="6" Height="6" CornerRadius="4" Background="#00B84C"/></Button><Button Click="AccentOrange_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Orange accent"><Border Width="6" Height="6" CornerRadius="4" Background="#FF8A00"/></Button><Button Click="AccentBlue_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Blue accent"><Border Width="6" Height="6" CornerRadius="4" Background="#268BFF"/></Button><Button Click="AccentRed_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Red accent"><Border Width="6" Height="6" CornerRadius="4" Background="#E53935"/></Button></StackPanel>
   </StackPanel>
   <!-- Group 3: caution LED and volume knob -->
-  <StackPanel Orientation="Horizontal" Margin="0,0,9,0" VerticalAlignment="Center">
+  <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
     <StackPanel Orientation="Vertical" Width="48" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" IsHitTestVisible="False" Panel.ZIndex="3">
   <TextBlock x:Name="LevelCautionLabel" Text="LEVEL" FontFamily="Segoe UI" FontSize="8"
              FontWeight="SemiBold" Foreground="#92999C" HorizontalAlignment="Center"
@@ -291,14 +300,14 @@
 </StackPanel>
   </StackPanel>
   <!-- Group 4: percentage, dim and mute -->
-  <StackPanel Orientation="Vertical" VerticalAlignment="Center" Width="65">
+  <StackPanel Grid.Column="6" Orientation="Vertical" VerticalAlignment="Center" Width="65">
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0">
  <Border Height="24" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="5" Background="#07110C" Margin="0,0,0,3" Padding="0"><TextBlock x:Name="VolumeText" Text="40%" Foreground="{DynamicResource AccentBrush}" FontSize="12" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center"/></Border>
  <Button x:Name="DimButton" Content="DIM" Click="Dim_Click" ToolTip="Lower to 10%; click again to restore previous volume" Height="17.3" FontSize="9" Margin="0,0,0,2.3" Padding="0"/>
  <Button x:Name="MuteButton" Content="MUTE" Click="Mute_Click" ToolTip="Mute / restore volume" Height="17.3" FontSize="7.5" Margin="0" Padding="0"/>
 </StackPanel>
   </StackPanel>
-</StackPanel>
+</Grid>
 </Grid></Border></Grid></Border>
   <Border x:Name="MusicLibraryPanel" Grid.Row="1" Background="#151B1E" BorderBrush="#455054" BorderThickness="1" CornerRadius="8" Padding="8"><Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><Grid x:Name="LibraryHeader" Margin="0,0,0,10"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel x:Name="LibraryActions" Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"><TextBlock x:Name="LibraryTitle" Text="LIBRARY" Visibility="Collapsed" FontWeight="Bold" FontSize="12" Foreground="#FFA43A" VerticalAlignment="Center" Margin="0,0,8,0"/><Button Content="ADD FOLDER" Click="AddFolder_Click" FontSize="7.5" Width="50.3"/><Button Content="REMOVE" Click="Remove_Click" FontSize="7.5" Width="50.3"/></StackPanel><StackPanel x:Name="LibraryPlaylistActions" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"><Button Content="LOAD PL" Click="LoadPlaylist_Click" FontSize="7.5" Width="50.3"/><Button Content="SAVE PL" Click="SavePlaylist_Click" FontSize="7.5" Width="50.3"/><Button Content="REMOVE PL" Click="RemovePlaylist_Click" FontSize="7.5" Width="57.8"/></StackPanel><StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"><StackPanel x:Name="LibraryTrackActions" Orientation="Horizontal"><Button Content="ADD TRACK" Click="Add_Click" FontSize="7.5" Width="50.3"/><Button Content="REMOVE TRACK" Click="RemoveTrack_Click" FontSize="7.5" Width="57.8"/></StackPanel><TextBlock x:Name="LibraryToggleText" Visibility="Collapsed" Text="CLOSE" Foreground="#FFA43A" FontSize="9" FontWeight="Bold" VerticalAlignment="Center" Margin="12,0,3,0"/><Button x:Name="LibraryToggleButton" Content="−" Click="ToggleMusicLibrary_Click" Width="22.5" Height="19.5" FontSize="10.5" Margin="2.3,0,0,0" ToolTip="Collapse or expand the music library"/></StackPanel></Grid>
    <Grid x:Name="LibraryContent" Grid.Row="1"><Grid.ColumnDefinitions><ColumnDefinition Width="0.85*" MinWidth="130"/><ColumnDefinition Width="6"/><ColumnDefinition Width="1*" MinWidth="150"/><ColumnDefinition Width="6"/><ColumnDefinition Width="1.5*" MinWidth="180"/></Grid.ColumnDefinitions>
