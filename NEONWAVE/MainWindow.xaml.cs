@@ -60,6 +60,7 @@ public partial class MainWindow : Window
     private readonly ObservableCollection<MusicPlaylist> playlists = new();
     private readonly List<Track> allTracks = new();
     private readonly DispatcherTimer timer = new() { Interval = TimeSpan.FromMilliseconds(200) };
+    private readonly DispatcherTimer discTimer = new() { Interval = TimeSpan.FromSeconds(2) };
     private List<Track> activeTracks = new();
     private AudioFileReader? reader;
     private FiveBandEqualizer? equalizer;
@@ -117,7 +118,15 @@ public partial class MainWindow : Window
         PlaylistList.ItemsSource = playlists;
         timer.Tick += (_, _) => UpdateDisplay();
         timer.Start();
-        Closed += (_, _) => DisposeAudio();
+        // Optical media can be inserted or removed without interacting with the player.
+        discTimer.Tick += (_, _) => UpdateDiscIndicator();
+        discTimer.Start();
+        UpdateDiscIndicator();
+        Closed += (_, _) =>
+        {
+            discTimer.Stop();
+            DisposeAudio();
+        };
     }
 
 
@@ -172,6 +181,7 @@ public partial class MainWindow : Window
         Resources["AccentColor"] = color;
         ApplyAccentToVisualTree(PlaybackControlsPanel, currentAccentBrush, color);
         ApplyAccentToVisualTree(MusicLibraryPanel, currentAccentBrush, color);
+        UpdateDiscIndicator();
     }
 
     private void AccentElement_Loaded(object sender, RoutedEventArgs e)
@@ -190,7 +200,7 @@ public partial class MainWindow : Window
     {
         // The ready-status label is deliberately neutral gray in every accent mode.
         if (ReferenceEquals(element, ReadyStatusText) ||
-            ReferenceEquals(element, LevelCautionLabel)) return;
+            ReferenceEquals(element, DiscIndicator)) return;
 
         // TextBlock and templated content use different foreground properties.
         if (element is TextBlock textBlock)
@@ -503,6 +513,39 @@ public partial class MainWindow : Window
         if (index >= 0) PlayIndex(index);
     }
 
+    private void UpdateDiscIndicator()
+    {
+        if (DiscIndicator == null) return;
+
+        // IsReady means the drive reports readable media, not merely an attached drive.
+        // Polling handles insertion/removal even when the player has no focus.
+        bool discPresent = false;
+        try
+        {
+            foreach (var drive in DriveInfo.GetDrives())
+            {
+                if (drive.DriveType != DriveType.CDRom) continue;
+                try
+                {
+                    if (drive.IsReady) { discPresent = true; break; }
+                }
+                catch (IOException) { /* Drive unavailable or tray open. */ }
+                catch (UnauthorizedAccessException) { /* Media inaccessible. */ }
+            }
+        }
+        catch (IOException) { /* Keep the indicator dark if detection fails. */ }
+
+        DiscIndicator.Foreground = discPresent
+            ? currentAccentBrush
+            : new SolidColorBrush(Color.FromRgb(81, 88, 92));
+        DiscIndicator.Effect = discPresent
+            ? new DropShadowEffect { Color = currentAccentColor, BlurRadius = 8,
+                                     ShadowDepth = 0, Opacity = 0.85 }
+            : null;
+        DiscIndicator.ToolTip = discPresent ? "Disc detected in optical drive"
+                                            : "No disc detected";
+    }
+
     [DllImport("winmm.dll", EntryPoint = "mciSendStringW", CharSet = CharSet.Unicode)]
     private static extern uint MciSendString(string command, IntPtr returnValue, uint returnLength, IntPtr callback);
 
@@ -531,7 +574,10 @@ public partial class MainWindow : Window
                 try
                 {
                     if (MciSendString($"set {alias} door open", IntPtr.Zero, 0, IntPtr.Zero) == 0)
+                    {
+                        UpdateDiscIndicator();
                         return;
+                    }
                 }
                 finally
                 {
