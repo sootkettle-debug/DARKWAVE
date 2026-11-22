@@ -21,7 +21,8 @@ public sealed class Track : INotifyPropertyChanged
     private bool isPlaying;
 
     public string Path { get; set; } = "";
-    public string DisplayName => System.IO.Path.GetFileNameWithoutExtension(Path);
+    public string? DisplayNameOverride { get; set; }
+    public string DisplayName => DisplayNameOverride ?? System.IO.Path.GetFileNameWithoutExtension(Path);
     public bool IsPlaying
     {
         get => isPlaying;
@@ -116,6 +117,7 @@ public partial class MainWindow : Window
         Loaded += (_, _) => QueueTrackGlassPanelWidth();
         FolderList.ItemsSource = folders;
         PlaylistList.ItemsSource = playlists;
+        FolderTracks.SelectionChanged += CdTrack_SelectionChanged;
         timer.Tick += (_, _) => UpdateDisplay();
         timer.Start();
         // Optical media can be inserted or removed without interacting with the player.
@@ -513,6 +515,11 @@ public partial class MainWindow : Window
 
     private void FolderTracks_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
+        if (discModeSelected)
+        {
+            if (cdOpen) SelectCdTrack(SelectedCdTrackNumber(), startPlayback: true);
+            return;
+        }
         if (FolderTracks.SelectedItem is not Track track) return;
         activeTracks = (FolderTracks.ItemsSource as ObservableCollection<Track>)?.ToList() ?? activeTracks;
         var index = activeTracks.IndexOf(track);
