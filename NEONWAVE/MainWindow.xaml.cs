@@ -173,30 +173,17 @@ public partial class MainWindow : Window
 
     private void AlignAccentButtonsBetweenControls()
     {
-        if (!PlaybackControlsPanel.IsLoaded ||
-            PlaybackButtonBar.ActualWidth <= 0 ||
-            VolumeKnob.ActualWidth <= 0 ||
-            AccentButtonsPanel.ActualWidth <= 0) return;
-
-        // Center the five colour buttons in the actual gap between the
-        // right edge of the playback button row and the left edge of the volume knob.
-        // TranslatePoint includes any existing transform, so subtract the
-        // current offset before applying the new one.
-        var playRight = PlaybackButtonBar.TranslatePoint(
-            new Point(PlaybackButtonBar.ActualWidth, 0), PlaybackControlsPanel).X;
-        var volumeLeft = VolumeKnob.TranslatePoint(
-            new Point(0, 0), PlaybackControlsPanel).X;
-        var currentCenter = AccentButtonsPanel.TranslatePoint(
-            new Point(AccentButtonsPanel.ActualWidth / 2, 0), PlaybackControlsPanel).X;
-        var desiredCenter = (playRight + volumeLeft) / 2;
-        AccentButtonsOffset.X += desiredCenter - currentCenter;
+        // Keep the five accent buttons centred in their dedicated 158px column.
+        // The earlier dynamic translation could push the ends outside the column
+        // when the playback group was condensed into a narrow window.
+        AccentButtonsOffset.X = 0;
     }
 
     private void AccentPurple_Click(object sender, RoutedEventArgs e) =>
         ApplyAccentColor(Color.FromRgb(166, 91, 224));
 
     private void AccentGreen_Click(object sender, RoutedEventArgs e) =>
-        ApplyAccentColor(Color.FromRgb(255, 138, 0));
+        ApplyAccentColor(Color.FromRgb(0, 184, 76));
 
     private void AccentOrange_Click(object sender, RoutedEventArgs e) =>
         ApplyAccentColor(Color.FromRgb(255, 138, 0));
