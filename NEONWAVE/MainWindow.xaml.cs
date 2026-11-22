@@ -132,22 +132,21 @@ public partial class MainWindow : Window
     {
         if (!UpperHeaderGrid.IsLoaded ||
             UpperPaneBorder.ActualWidth <= 0 ||
-            AlbumArtScreen.ActualWidth <= 0 ||
-            RoundDarkwaveLogo.ActualWidth <= 0) return;
+            AlbumArtScreen.ActualWidth <= 0) return;
 
         var paneRight = UpperPaneBorder.TranslatePoint(
             new Point(UpperPaneBorder.ActualWidth, 0), UpperHeaderGrid).X;
         var artRight = AlbumArtScreen.TranslatePoint(
             new Point(AlbumArtScreen.ActualWidth, 0), UpperHeaderGrid).X;
-        var roundLogoLeft = RoundDarkwaveLogo.TranslatePoint(
+        var artLeft = AlbumArtScreen.TranslatePoint(
             new Point(0, 0), UpperHeaderGrid).X;
         var panelLeft = TrackGlassPanel.TranslatePoint(
             new Point(0, 0), UpperHeaderGrid).X;
 
-        // Mirror the art-to-pane-edge margin between the glass display and round logo.
-        // The 100px logo/art pair stays centred by its WPF column alignment as resizing occurs.
-        var mirroredGap = Math.Max(0, paneRight - artRight);
-        var availableWidth = Math.Max(1, roundLogoLeft - panelLeft - mirroredGap);
+        // Size the title display to the remaining room before album art,
+        // retaining a gap similar to the artwork's right-side inset.
+        var mirroredGap = Math.Max(8, paneRight - artRight);
+        var availableWidth = Math.Max(1, artLeft - panelLeft - mirroredGap);
         var width = Math.Min(availableWidth, UpperHeaderGrid.ColumnDefinitions[0].ActualWidth);
         if (Math.Abs(TrackGlassPanel.ActualWidth - width) > 0.5)
             TrackGlassPanel.Width = width;
