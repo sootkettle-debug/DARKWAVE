@@ -180,18 +180,37 @@
   </StackPanel>
   <!-- Group 2: accent colour buttons -->
   <Grid Grid.Column="2" Width="105" Height="84" VerticalAlignment="Center" HorizontalAlignment="Center">
-    <!-- The accent buttons start 63px below the group's top (84 - 18 - 3).
-         Centre the DISC frame within that entire upper 63px space. -->
-    <Grid Height="63" VerticalAlignment="Top">
-    <Border Width="64" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center"
-            Margin="0"
-            Background="#0A0E10" BorderBrush="#566166" BorderThickness="1"
-            CornerRadius="4" Padding="5,2">
-      <TextBlock x:Name="DiscIndicator" Text="DISC"
-                 FontFamily="Segoe UI" FontSize="10" FontWeight="Bold"
-                 Foreground="#51585C" HorizontalAlignment="Center" VerticalAlignment="Center"
-                 TextAlignment="Center" IsHitTestVisible="False"/>
-    </Border>
+    <!-- Two framed source displays with independent selector buttons. -->
+    <Grid Height="63" VerticalAlignment="Top" HorizontalAlignment="Center">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="50"/>
+        <ColumnDefinition Width="5"/>
+        <ColumnDefinition Width="50"/>
+      </Grid.ColumnDefinitions>
+      <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Border Width="48" Height="23" Background="#0A0E10" BorderBrush="#566166"
+                BorderThickness="1" CornerRadius="4" Padding="2">
+          <TextBlock x:Name="DiscIndicator" Text="DISC" FontFamily="Segoe UI"
+                     FontSize="10" FontWeight="Bold" Foreground="#51585C"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                     TextAlignment="Center" IsHitTestVisible="False"/>
+        </Border>
+        <Button x:Name="DiscModeButton" Content="●" Click="DiscMode_Click"
+                Width="18" Height="16" FontSize="8" Padding="0" Margin="0,3,0,0"
+                HorizontalAlignment="Center" ToolTip="Select audio CD playback"/>
+      </StackPanel>
+      <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Border Width="48" Height="23" Background="#0A0E10" BorderBrush="#566166"
+                BorderThickness="1" CornerRadius="4" Padding="2">
+          <TextBlock x:Name="FileIndicator" Text="FILE" FontFamily="Segoe UI"
+                     FontSize="10" FontWeight="Bold" Foreground="#51585C"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                     TextAlignment="Center" IsHitTestVisible="False"/>
+        </Border>
+        <Button x:Name="FileModeButton" Content="●" Click="FileMode_Click"
+                Width="18" Height="16" FontSize="8" Padding="0" Margin="0,3,0,0"
+                HorizontalAlignment="Center" ToolTip="Select music library playback"/>
+      </StackPanel>
     </Grid>
     <StackPanel x:Name="AccentButtonsPanel" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,3"><StackPanel.RenderTransform><TranslateTransform x:Name="AccentButtonsOffset"/></StackPanel.RenderTransform><Button Click="AccentPurple_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Purple accent"><Border Width="6" Height="6" CornerRadius="4" Background="#7027A8"/></Button><Button Click="AccentGreen_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Green accent"><Border Width="6" Height="6" CornerRadius="4" Background="#00B84C"/></Button><Button Click="AccentOrange_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Orange accent"><Border Width="6" Height="6" CornerRadius="4" Background="#FF8A00"/></Button><Button Click="AccentBlue_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Blue accent"><Border Width="6" Height="6" CornerRadius="4" Background="#268BFF"/></Button><Button Click="AccentRed_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Red accent"><Border Width="6" Height="6" CornerRadius="4" Background="#E53935"/></Button></StackPanel>
   </Grid>
