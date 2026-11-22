@@ -32,12 +32,12 @@
       <Grid Height="20" VerticalAlignment="Center">
        <Track x:Name="PART_Track" IsDirectionReversed="{TemplateBinding IsDirectionReversed}">
         <Track.DecreaseRepeatButton>
-         <RepeatButton Command="Slider.DecreaseLarge" IsTabStop="False" Focusable="False" Height="2" VerticalAlignment="Center">
+         <RepeatButton Command="Slider.DecreaseLarge" IsTabStop="False" Focusable="False" Height="6" VerticalAlignment="Center">
           <RepeatButton.Template>
            <ControlTemplate TargetType="RepeatButton">
             <Grid>
-             <Border CornerRadius="1" Background="{DynamicResource AccentBrush}"/>
-             <Border CornerRadius="1" BorderBrush="#80FFFFFF" BorderThickness="0,1,0,0" Opacity="0.35">
+             <Border CornerRadius="3" Background="{DynamicResource AccentBrush}"/>
+             <Border CornerRadius="3" BorderBrush="#80FFFFFF" BorderThickness="0,1,0,0" Opacity="0.35">
               <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#AAFFFFFF" Offset="0"/><GradientStop Color="#00FFFFFF" Offset="0.5"/><GradientStop Color="#55000000" Offset="1"/></LinearGradientBrush></Border.Background>
              </Border>
             </Grid>
@@ -46,7 +46,7 @@
          </RepeatButton>
         </Track.DecreaseRepeatButton>
         <Track.Thumb>
-         <Thumb Width="5" Height="5" Focusable="False">
+         <Thumb Width="10.5" Height="10.5" Focusable="False">
           <Thumb.Template>
            <ControlTemplate TargetType="Thumb">
             <Ellipse Stroke="#849499" StrokeThickness="1">
@@ -58,10 +58,10 @@
          </Thumb>
         </Track.Thumb>
         <Track.IncreaseRepeatButton>
-         <RepeatButton Command="Slider.IncreaseLarge" IsTabStop="False" Focusable="False" Height="2" VerticalAlignment="Center">
+         <RepeatButton Command="Slider.IncreaseLarge" IsTabStop="False" Focusable="False" Height="6" VerticalAlignment="Center">
           <RepeatButton.Template>
            <ControlTemplate TargetType="RepeatButton">
-            <Border CornerRadius="1" BorderBrush="#526065" BorderThickness="0,1,0,1">
+            <Border CornerRadius="3" BorderBrush="#526065" BorderThickness="0,1,0,1">
              <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#465156" Offset="0"/><GradientStop Color="#20292D" Offset="0.23"/><GradientStop Color="#070A0C" Offset="0.64"/><GradientStop Color="#151B1E" Offset="1"/></LinearGradientBrush></Border.Background>
             </Border>
            </ControlTemplate>
