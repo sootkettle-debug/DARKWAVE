@@ -260,7 +260,7 @@
 
  </StackPanel>
  <StackPanel x:Name="AccentButtonsPanel" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,4,0,0"><StackPanel.RenderTransform><TranslateTransform x:Name="AccentButtonsOffset"/></StackPanel.RenderTransform><Button Click="AccentPurple_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Purple accent"><Border Width="6" Height="6" CornerRadius="4" Background="#7027A8"/></Button><Button Click="AccentGreen_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Green accent"><Border Width="6" Height="6" CornerRadius="4" Background="#00B84C"/></Button><Button Click="AccentOrange_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Orange accent"><Border Width="6" Height="6" CornerRadius="4" Background="#FF8A00"/></Button><Button Click="AccentBlue_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Blue accent"><Border Width="6" Height="6" CornerRadius="4" Background="#268BFF"/></Button><Button Click="AccentRed_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Red accent"><Border Width="6" Height="6" CornerRadius="4" Background="#E53935"/></Button></StackPanel>
-</StackPanel></StackPanel></StackPanel><Grid Grid.Column="3" Width="149" Height="104" HorizontalAlignment="Left" Margin="9,0,0,0">
+</StackPanel></StackPanel></StackPanel><Grid Grid.Column="3" Width="149" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="9,0,0,3">
 <Grid>
 <Grid.ColumnDefinitions><ColumnDefinition Width="83"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
 <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
