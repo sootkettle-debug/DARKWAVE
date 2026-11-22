@@ -4,6 +4,7 @@ using NAudio.Wave.SampleProviders;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
@@ -90,23 +91,11 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        // Move the complete window after WPF has finished CenterScreen positioning.
-        // Use 40% of the available space below it, keeping the title bar on screen.
-        Loaded += (_, _) => Dispatcher.BeginInvoke(new Action(() =>
-        {
-            var workArea = SystemParameters.WorkArea;
-            var freeSpaceBelow = Math.Max(0, workArea.Bottom - (Top + ActualHeight));
-            Top += freeSpaceBelow * 0.40;
-            // Position the title bar and upper artwork 10px lower than before.
-            // Trim the matching height from the window so the lower library stays in place.
-            Top += 38;
-            Height = Math.Max(MinHeight, Height - 38);
-            expandedWindowHeight = Height;
-        }), DispatcherPriority.ApplicationIdle);
+        // Compact Dark stays centered with its own smaller native window dimensions.
         UpdateVolumeControl();
         UpdateEqKnobs();
         expandedWindowHeight = Height;
-        ApplyAccentColor(Color.FromRgb(0, 184, 76));
+        ApplyAccentColor(Color.FromRgb(255, 138, 0));
         // Re-apply accents as WPF creates template content and virtualized list rows.
         PlaybackControlsPanel.AddHandler(FrameworkElement.LoadedEvent,
             new RoutedEventHandler(AccentElement_Loaded), true);
@@ -318,7 +307,7 @@ public partial class MainWindow : Window
         if (expand)
         {
             SizeToContent = SizeToContent.Manual;
-            MinHeight = 560;
+            MinHeight = 405;
             Height = Math.Max(expandedWindowHeight, MinHeight);
         }
         else
@@ -344,7 +333,7 @@ public partial class MainWindow : Window
         LibraryHeader.Margin = expand
             ? new Thickness(0, 0, 0, 10)
             : new Thickness(0);
-        LibraryTitle.Visibility = expand ? Visibility.Visible : Visibility.Collapsed;
+        LibraryTitle.Visibility = Visibility.Collapsed;
         LibraryToggleText.Text = expand ? "CLOSE LIBRARY" : "OPEN LIBRARY";
         LibraryToggleButton.Content = expand ? "−" : "+";
 
@@ -589,6 +578,43 @@ public partial class MainWindow : Window
     {
         if (reader != null && reader.CurrentTime.TotalSeconds > 3) reader.CurrentTime = TimeSpan.Zero;
         else if (activeTracks.Count > 0) PlayIndex((Math.Max(0, currentIndex - 1) + activeTracks.Count) % activeTracks.Count);
+    }
+
+    // Eject a physical optical drive using the native Windows multimedia interface.
+    [DllImport("winmm.dll", CharSet = CharSet.Unicode)]
+    private static extern int mciSendString(string command, System.Text.StringBuilder? response,
+        int responseLength, IntPtr callback);
+
+    private void EjectCd_Click(object sender, RoutedEventArgs e)
+    {
+        var drive = DriveInfo.GetDrives().FirstOrDefault(d => d.DriveType == DriveType.CDRom);
+        if (drive == null)
+        {
+            MessageBox.Show(this, "No optical CD/DVD drive was detected.", "Compact Dark",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        const string alias = "CompactDarkCd";
+        var driveLetter = drive.Name.Substring(0, 2);
+        var opened = mciSendString($"open {driveLetter} type cdaudio alias {alias}", null, 0, IntPtr.Zero);
+        if (opened != 0)
+        {
+            MessageBox.Show(this, "Windows could not open the optical drive for ejection.",
+                "Compact Dark", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        try
+        {
+            if (mciSendString($"set {alias} door open", null, 0, IntPtr.Zero) != 0)
+                MessageBox.Show(this, "The CD tray could not be ejected. Check the drive.",
+                    "Compact Dark", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            mciSendString($"close {alias}", null, 0, IntPtr.Zero);
+        }
     }
 
     private void Next_Click(object sender, RoutedEventArgs e) => NextTrack();
