@@ -28,7 +28,7 @@ public partial class MainWindow
     private DateTime cdLastOpenAttemptUtc = DateTime.MinValue;
     private readonly ObservableCollection<Track> cdListTracks = new();
     private readonly System.Collections.Generic.Dictionary<Track, int> cdTrackNumbers = new();
-    private object? fileTrackListSource;
+    private System.Collections.IEnumerable? fileTrackListSource;
     private string fileTrackListHeading = "TRACKS";
 
     private void DiscMode_Click(object sender, RoutedEventArgs e) => SelectPlaybackMode(true);
