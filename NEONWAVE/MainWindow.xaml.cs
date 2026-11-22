@@ -66,8 +66,8 @@ public partial class MainWindow : Window
     private int currentIndex = -1;
     private bool advanceQueued;
     private double expandedWindowHeight;
-    private Color currentAccentColor = Color.FromRgb(0, 184, 76);
-    private SolidColorBrush currentAccentBrush = new(Color.FromRgb(0, 184, 76));
+    private Color currentAccentColor = Color.FromRgb(255, 138, 0);
+    private SolidColorBrush currentAccentBrush = new(Color.FromRgb(255, 138, 0));
 
     private static readonly string[] SupportedExtensions =
         [".mp3", ".wav", ".aiff", ".aif", ".wma", ".aac", ".m4a", ".flac"];
@@ -76,7 +76,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         expandedWindowHeight = Height;
-        ApplyAccentColor(Color.FromRgb(0, 184, 76));
+        ApplyAccentColor(Color.FromRgb(255, 138, 0));
         // Re-apply accents as WPF creates template content and virtualized list rows.
         PlaybackControlsPanel.AddHandler(FrameworkElement.LoadedEvent,
             new RoutedEventHandler(AccentElement_Loaded), true);
@@ -96,7 +96,7 @@ public partial class MainWindow : Window
         ApplyAccentColor(Color.FromRgb(166, 91, 224));
 
     private void AccentGreen_Click(object sender, RoutedEventArgs e) =>
-        ApplyAccentColor(Color.FromRgb(0, 184, 76));
+        ApplyAccentColor(Color.FromRgb(255, 138, 0));
 
     private void AccentOrange_Click(object sender, RoutedEventArgs e) =>
         ApplyAccentColor(Color.FromRgb(255, 138, 0));
