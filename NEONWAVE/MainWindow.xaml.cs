@@ -334,7 +334,7 @@ public partial class MainWindow : Window
             ? new Thickness(0, 0, 0, 10)
             : new Thickness(0);
         LibraryTitle.Visibility = Visibility.Collapsed;
-        LibraryToggleText.Text = expand ? "CLOSE LIBRARY" : "OPEN LIBRARY";
+        LibraryToggleText.Text = expand ? "CLOSE" : "OPEN";
         LibraryToggleButton.Content = expand ? "−" : "+";
 
         if (expand)
