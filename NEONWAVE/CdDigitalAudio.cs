@@ -124,6 +124,15 @@ internal sealed class CdDigitalAudio : WaveStream
         }
     }
 
+    public bool IsDriveAvailable()
+    {
+        if (device.IsClosed || device.IsInvalid) return false;
+        var toc = new byte[804];
+        return DeviceIoControl(device, TocEx, new byte[4], 4,
+            toc, toc.Length, out int returned, IntPtr.Zero) &&
+            returned >= 20;
+    }
+
     public bool SelectTrack(int number)
     {
         foreach (var track in tracks)
