@@ -194,7 +194,8 @@
 </StackPanel>
 </Grid><Grid Grid.Row="1" Margin="0,10,0,0"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="20"/></Grid.RowDefinitions><TextBlock x:Name="ElapsedText" Grid.Row="0" Text="0:00" Foreground="#B5A08D" FontSize="10" HorizontalAlignment="Left" Margin="9,0,0,0"/><TextBlock x:Name="DurationText" Grid.Row="0" Text="0:00" Foreground="#B5A08D" FontSize="10" HorizontalAlignment="Right" Margin="0,0,9,0"/><Slider x:Name="SeekSlider" Grid.Row="1" Style="{StaticResource GlossySeekSliderStyle}" Minimum="0" Maximum="100" Value="0" Margin="9,0,9,0" VerticalAlignment="Center" Foreground="#263238" Background="#11171A" ValueChanged="SeekSlider_ValueChanged" PreviewMouseLeftButtonDown="SeekSlider_MouseDown" PreviewMouseLeftButtonUp="SeekSlider_MouseUp"/></Grid><Border x:Name="PlaybackControlsPanel" SizeChanged="PlaybackControlsPanel_SizeChanged" Grid.Row="2" Background="#151B1E" BorderBrush="#455054" BorderThickness="1" CornerRadius="8" Padding="7" Margin="0,12,0,0"><Grid>
 <TextBlock x:Name="ReadyStatusText" Text="Darkwave - Ready to play" Foreground="#D5A76D" FontFamily="Segoe Script" FontStyle="Italic" FontSize="13" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,9" TextTrimming="CharacterEllipsis"/>
-<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+  <!-- All four control groups are centred together as a single row whenever the window resizes. -->
   <!-- Group 1: five-band EQ plus transport and CD eject -->
   <StackPanel Orientation="Vertical" Margin="0,0,9,0" VerticalAlignment="Center">
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,6"><StackPanel Width="40.5" HorizontalAlignment="Center" ToolTip="L EQ: drag up/down or scroll to adjust (-12 to +12 dB)">
