@@ -88,7 +88,7 @@
 <StackPanel Grid.Column="0">
 <Grid Height="72"/>
 <!-- Glass panel ends as close to the round logo as the album art is to the right pane edge. -->
-<Border x:Name="TrackGlassPanel" HorizontalAlignment="Left" Height="34" Margin="0,16,0,0" Padding="10,2,10,2"
+<Border x:Name="TrackGlassPanel" HorizontalAlignment="Left" Height="25.5" Margin="0,16,0,0" Padding="10,2,10,2"
         CornerRadius="7" BorderBrush="#59666B" BorderThickness="1">
  <Border.Background>
   <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
