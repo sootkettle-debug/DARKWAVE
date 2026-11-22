@@ -183,6 +183,7 @@ public partial class MainWindow : Window
         ApplyAccentToVisualTree(PlaybackControlsPanel, currentAccentBrush, color);
         ApplyAccentToVisualTree(MusicLibraryPanel, currentAccentBrush, color);
         UpdateDiscIndicator();
+        UpdateSourceModeDisplays();
     }
 
     private void AccentElement_Loaded(object sender, RoutedEventArgs e)
@@ -195,13 +196,17 @@ public partial class MainWindow : Window
     {
         ApplyAccentToVisualTree(PlaybackControlsPanel, currentAccentBrush, currentAccentColor);
         ApplyAccentToVisualTree(MusicLibraryPanel, currentAccentBrush, currentAccentColor);
+        UpdateSourceModeDisplays();
     }
 
     private void ApplyAccentToElement(DependencyObject element, Brush brush)
     {
         // The ready-status label is deliberately neutral gray in every accent mode.
         if (ReferenceEquals(element, ReadyStatusText) ||
-            ReferenceEquals(element, DiscIndicator)) return;
+            ReferenceEquals(element, DiscIndicator) ||
+            ReferenceEquals(element, FileIndicator) ||
+            ReferenceEquals(element, DiscModeButton) ||
+            ReferenceEquals(element, FileModeButton)) return;
 
         // TextBlock and templated content use different foreground properties.
         if (element is TextBlock textBlock)
@@ -538,15 +543,7 @@ public partial class MainWindow : Window
         catch (IOException) { /* Keep the indicator dark if detection fails. */ }
 
         PollAudioCd(discPresent, readyDrive);
-        DiscIndicator.Foreground = discPresent
-            ? currentAccentBrush
-            : new SolidColorBrush(Color.FromRgb(81, 88, 92));
-        DiscIndicator.Effect = discPresent
-            ? new DropShadowEffect { Color = currentAccentColor, BlurRadius = 8,
-                                     ShadowDepth = 0, Opacity = 0.85 }
-            : null;
-        DiscIndicator.ToolTip = discPresent ? "Disc detected in optical drive"
-                                            : "No disc detected";
+        UpdateSourceModeDisplays();
     }
 
     [DllImport("winmm.dll", EntryPoint = "mciSendStringW", CharSet = CharSet.Unicode)]
@@ -556,6 +553,7 @@ public partial class MainWindow : Window
     {
         // Close the active CD transport before opening the tray.
         if (cdOpen) CloseCdSession(clearDisplay: true);
+        if (discModeSelected) TrackTitle.Text = "NO DISC";
         cdAttemptedForInsertion = true;
         try
         {
@@ -601,9 +599,15 @@ public partial class MainWindow : Window
 
     private void Play_Click(object sender, RoutedEventArgs e)
     {
-        if (cdOpen)
+        if (discModeSelected)
         {
-            PauseOrResumeCd();
+            if (cdOpen) PauseOrResumeCd();
+            else
+            {
+                // Retry on demand when an audio CD is inserted after an earlier failure.
+                cdAttemptedForInsertion = false;
+                UpdateDiscIndicator();
+            }
             return;
         }
         // A single-click selection takes priority when starting or switching tracks.
@@ -644,6 +648,11 @@ public partial class MainWindow : Window
             MoveCdTrack(-1);
             return;
         }
+        if (discModeSelected)
+        {
+            if (cdOpen) MoveCdTrack(-1);
+            return;
+        }
         if (reader != null && reader.CurrentTime.TotalSeconds > 3) reader.CurrentTime = TimeSpan.Zero;
         else if (activeTracks.Count > 0) PlayIndex((Math.Max(0, currentIndex - 1) + activeTracks.Count) % activeTracks.Count);
     }
@@ -652,6 +661,7 @@ public partial class MainWindow : Window
 
     private void NextTrack()
     {
+        if (discModeSelected && !cdOpen) return;
         if (cdOpen)
         {
             MoveCdTrack(1);
@@ -662,6 +672,7 @@ public partial class MainWindow : Window
 
     private void Stop_Click(object sender, RoutedEventArgs e)
     {
+        if (discModeSelected && !cdOpen) return;
         if (cdOpen)
         {
             StopCdPlayback();
@@ -681,8 +692,10 @@ public partial class MainWindow : Window
         if (index < 0 || index >= activeTracks.Count) return;
         try
         {
-            // Selecting a library track switches back to the NAudio file engine.
+            // Selecting a library track switches to FILE mode and NAudio.
             if (cdOpen) CloseCdSession(clearDisplay: false);
+            discModeSelected = false;
+            UpdateSourceModeDisplays();
             advanceQueued = false;
             DisposeAudio();
             currentIndex = index;
@@ -794,9 +807,9 @@ public partial class MainWindow : Window
 
     private void UpdateDisplay()
     {
-        if (cdOpen)
+        if (discModeSelected)
         {
-            TickCdPlayback();
+            if (cdOpen) TickCdPlayback();
             return;
         }
         if (output != null && reader != null)
@@ -817,7 +830,7 @@ public partial class MainWindow : Window
 
     private void SeekSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        if (!changingSeek && cdOpen && draggingSeek) return;
+        if (!changingSeek && discModeSelected && draggingSeek) return;
         if (!changingSeek && reader != null && draggingSeek)
             reader.CurrentTime = TimeSpan.FromSeconds(reader.TotalTime.TotalSeconds * SeekSlider.Value / 100);
     }
@@ -826,7 +839,10 @@ public partial class MainWindow : Window
 
     private void SeekSlider_MouseUp(object sender, MouseButtonEventArgs e)
     {
-        if (cdOpen) SeekCdToPercent(SeekSlider.Value);
+        if (discModeSelected)
+        {
+            if (cdOpen) SeekCdToPercent(SeekSlider.Value);
+        }
         else if (reader != null)
             reader.CurrentTime = TimeSpan.FromSeconds(reader.TotalTime.TotalSeconds * SeekSlider.Value / 100);
         draggingSeek = false;
