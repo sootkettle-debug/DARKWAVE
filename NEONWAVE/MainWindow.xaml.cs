@@ -134,15 +134,8 @@ public partial class MainWindow : Window
             UpperPaneBorder.ActualWidth <= 0 ||
             AlbumArtScreen.ActualWidth <= 0) return;
 
-        var panelLeft = TrackGlassPanel.TranslatePoint(
-            new Point(0, 0), UpperHeaderGrid).X;
-
-        // The title display sits below the raised album art, so it can span
-        // the entire header. Both sides inherit the same 9px pane padding.
-        // Unlike the previous calculation, do not stop at the album-art column.
-        var width = Math.Max(1, UpperHeaderGrid.ActualWidth - panelLeft);
-        if (Math.Abs(TrackGlassPanel.ActualWidth - width) > 0.5)
-            TrackGlassPanel.Width = width;
+        // XAML stretches the glass panel across both header columns.
+        // Do not assign a fixed width, which would override the layout.
 
         // Keep the DARKWAVE+ lettering vertically centred between the upper
         // pane's top edge and the top of the track-title glass panel.
