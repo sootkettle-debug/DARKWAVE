@@ -4,6 +4,7 @@ using NAudio.Wave.SampleProviders;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
@@ -531,6 +532,52 @@ public partial class MainWindow : Window
         activeTracks = (FolderTracks.ItemsSource as ObservableCollection<Track>)?.ToList() ?? activeTracks;
         var index = activeTracks.IndexOf(track);
         if (index >= 0) PlayIndex(index);
+    }
+
+    [DllImport("winmm.dll", EntryPoint = "mciSendStringW", CharSet = CharSet.Unicode)]
+    private static extern uint MciSendString(string command, IntPtr returnValue, uint returnLength, IntPtr callback);
+
+    private void EjectCd_Click(object sender, RoutedEventArgs e)
+    {
+        // An eject command needs a real optical drive. It is intentionally
+        // independent of the playlist and playback engine.
+        try
+        {
+            var drives = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.CDRom).ToList();
+            if (drives.Count == 0)
+            {
+                MessageBox.Show("No CD/DVD drive was detected.", "Compact Dark — Eject",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            foreach (var drive in drives)
+            {
+                const string alias = "CompactDarkCdTray";
+                var driveLetter = drive.Name.TrimEnd('\\');
+                if (MciSendString($"open {driveLetter} type cdaudio alias {alias}",
+                        IntPtr.Zero, 0, IntPtr.Zero) != 0)
+                    continue;
+
+                try
+                {
+                    if (MciSendString($"set {alias} door open", IntPtr.Zero, 0, IntPtr.Zero) == 0)
+                        return;
+                }
+                finally
+                {
+                    MciSendString($"close {alias}", IntPtr.Zero, 0, IntPtr.Zero);
+                }
+            }
+
+            MessageBox.Show("Windows could not eject the CD/DVD tray. The drive may be busy or may not support software eject.",
+                "Compact Dark — Eject", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Could not eject the CD/DVD tray.\\n\\n{ex.Message}",
+                "Compact Dark — Eject", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
     }
 
     private void Play_Click(object sender, RoutedEventArgs e)
