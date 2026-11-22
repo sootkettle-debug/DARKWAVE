@@ -122,51 +122,63 @@ public partial class MainWindow
         return TimeSpan.FromSeconds(minutes * 60 + seconds + frames / 75.0);
     }
 
-    private void PollAudioCd(bool mediaPresent, string? driveName)
+    private void PollAudioCd(string[] opticalDrives)
     {
-        // Only DISC mode can activate a CD. File mode never steals playback
-        // from the library when a disc is inserted.
         if (!discModeSelected) return;
-        // Called by the existing two-second optical-drive poll.
-        if (!mediaPresent || driveName == null)
+
+        if (opticalDrives.Length == 0)
         {
             if (cdOpen) CloseCdSession(clearDisplay: false);
             lastReadyCdDrive = null;
             cdAttemptedForInsertion = false;
             ShowNoDisc();
+            DiscIndicator.ToolTip = "No optical CD/DVD drive detected";
             return;
         }
 
-        if (!string.Equals(lastReadyCdDrive, driveName, StringComparison.OrdinalIgnoreCase))
-        {
-            if (cdOpen) CloseCdSession(clearDisplay: false);
-            lastReadyCdDrive = driveName;
-            cdAttemptedForInsertion = false;
-        }
-
+        // A CD-DA disc often has no readable filesystem, so IsReady cannot
+        // distinguish an empty tray from a playable audio CD.
         if (cdOpen)
         {
-            if (!string.Equals(CdQuery($"status {CdAlias} media present"), "true",
-                    StringComparison.OrdinalIgnoreCase))
+            var present = CdQuery($"status {CdAlias} media present");
+            if (present == "true" || present == "1")
+            {
+                DiscIndicator.ToolTip = $"Audio CD in {cdDrive}";
+                return;
+            }
+            CloseCdSession(clearDisplay: false);
+            lastReadyCdDrive = null;
+            cdAttemptedForInsertion = false;
+            ShowNoDisc();
+        }
+
+        // Retry a closed/empty drive periodically. Avoid retrying MCI on each
+        // 200 ms playback refresh. This also detects later disc insertion.
+        if (DateTime.UtcNow - cdLastOpenAttemptUtc < TimeSpan.FromSeconds(3))
+            return;
+        cdLastOpenAttemptUtc = DateTime.UtcNow;
+
+        foreach (var driveName in opticalDrives)
+        {
+            if (!TryOpenAudioCd(driveName)) continue;
+            lastReadyCdDrive = driveName;
+            cdAttemptedForInsertion = true;
+            int firstAudioTrack = FindAudioTrack(1, 1);
+            if (firstAudioTrack > 0)
+            {
+                if (!PlayCdTrack(firstAudioTrack))
+                    DiscIndicator.ToolTip = $"Audio CD detected in {driveName}, playback failed";
+            }
+            else
             {
                 CloseCdSession(clearDisplay: false);
                 ShowNoDisc();
-                cdAttemptedForInsertion = false;
             }
-            else return;
+            return;
         }
 
-        // One automatic attempt for each insertion, with a short retry delay if
-        // Windows reports the disc ready before the optical driver is initialized.
-        if (cdAttemptedForInsertion ||
-            DateTime.UtcNow - cdLastOpenAttemptUtc < TimeSpan.FromSeconds(3)) return;
-        cdLastOpenAttemptUtc = DateTime.UtcNow;
-        if (TryOpenAudioCd(driveName))
-        {
-            cdAttemptedForInsertion = true;
-            int firstAudioTrack = FindAudioTrack(1, 1);
-            if (firstAudioTrack > 0) PlayCdTrack(firstAudioTrack);
-        }
+        ShowNoDisc();
+        DiscIndicator.ToolTip = "Optical drive found, no readable audio CD detected";
     }
 
     private bool TryOpenAudioCd(string driveName)
@@ -175,7 +187,11 @@ public partial class MainWindow
         if (CdCommand($"open {driveLetter} type cdaudio alias {CdAlias}") != 0)
             return false;
 
-        if (CdCommand($"set {CdAlias} time format tmsf") != 0 ||
+        // The command can open a CD device even with an empty tray. Check both
+        // its media status and track table, not the filesystem readiness flag.
+        var media = CdQuery($"status {CdAlias} media present");
+        if ((media != "true" && media != "1") ||
+            CdCommand($"set {CdAlias} time format tmsf") != 0 ||
             !int.TryParse(CdQuery($"status {CdAlias} number of tracks"), out int tracks) ||
             tracks < 1)
         {
