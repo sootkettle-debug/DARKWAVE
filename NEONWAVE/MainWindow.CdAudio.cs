@@ -129,6 +129,7 @@ public partial class MainWindow
         cdCurrentTrack = number;
         cdTrackDuration = cdReader.TotalTime;
         cdPlaying = cdPaused = false;
+        foreach (var item in cdListTracks) item.IsPlaying = false;
         TrackTitle.Text = CdTrackName(number);
         PlayButton.Content = "▶";
         SetLogoPulse(false);
