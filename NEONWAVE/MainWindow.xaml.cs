@@ -125,6 +125,7 @@ public partial class MainWindow : Window
         Closed += (_, _) =>
         {
             discTimer.Stop();
+            CloseCdSession(clearDisplay: false);
             DisposeAudio();
         };
     }
@@ -520,6 +521,7 @@ public partial class MainWindow : Window
         // IsReady means the drive reports readable media, not merely an attached drive.
         // Polling handles insertion/removal even when the player has no focus.
         bool discPresent = false;
+        string? readyDrive = null;
         try
         {
             foreach (var drive in DriveInfo.GetDrives())
@@ -527,7 +529,7 @@ public partial class MainWindow : Window
                 if (drive.DriveType != DriveType.CDRom) continue;
                 try
                 {
-                    if (drive.IsReady) { discPresent = true; break; }
+                    if (drive.IsReady) { discPresent = true; readyDrive = drive.Name; break; }
                 }
                 catch (IOException) { /* Drive unavailable or tray open. */ }
                 catch (UnauthorizedAccessException) { /* Media inaccessible. */ }
@@ -535,6 +537,7 @@ public partial class MainWindow : Window
         }
         catch (IOException) { /* Keep the indicator dark if detection fails. */ }
 
+        PollAudioCd(discPresent, readyDrive);
         DiscIndicator.Foreground = discPresent
             ? currentAccentBrush
             : new SolidColorBrush(Color.FromRgb(81, 88, 92));
@@ -551,8 +554,9 @@ public partial class MainWindow : Window
 
     private void EjectCd_Click(object sender, RoutedEventArgs e)
     {
-        // An eject command needs a real optical drive. It is intentionally
-        // independent of the playlist and playback engine.
+        // Close the active CD transport before opening the tray.
+        if (cdOpen) CloseCdSession(clearDisplay: true);
+        cdAttemptedForInsertion = true;
         try
         {
             var drives = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.CDRom).ToList();
@@ -597,6 +601,11 @@ public partial class MainWindow : Window
 
     private void Play_Click(object sender, RoutedEventArgs e)
     {
+        if (cdOpen)
+        {
+            PauseOrResumeCd();
+            return;
+        }
         // A single-click selection takes priority when starting or switching tracks.
         var selectedTrack = FolderTracks.SelectedItem as Track;
         var selectedIndex = selectedTrack == null ? -1 : activeTracks.IndexOf(selectedTrack);
@@ -630,6 +639,11 @@ public partial class MainWindow : Window
 
     private void Previous_Click(object sender, RoutedEventArgs e)
     {
+        if (cdOpen)
+        {
+            MoveCdTrack(-1);
+            return;
+        }
         if (reader != null && reader.CurrentTime.TotalSeconds > 3) reader.CurrentTime = TimeSpan.Zero;
         else if (activeTracks.Count > 0) PlayIndex((Math.Max(0, currentIndex - 1) + activeTracks.Count) % activeTracks.Count);
     }
@@ -638,11 +652,21 @@ public partial class MainWindow : Window
 
     private void NextTrack()
     {
+        if (cdOpen)
+        {
+            MoveCdTrack(1);
+            return;
+        }
         if (activeTracks.Count > 0) PlayIndex((currentIndex + 1) % activeTracks.Count);
     }
 
     private void Stop_Click(object sender, RoutedEventArgs e)
     {
+        if (cdOpen)
+        {
+            StopCdPlayback();
+            return;
+        }
         SetLogoPulse(false);
         if (currentIndex >= 0 && currentIndex < activeTracks.Count)
             activeTracks[currentIndex].IsPlaying = false;
@@ -657,6 +681,8 @@ public partial class MainWindow : Window
         if (index < 0 || index >= activeTracks.Count) return;
         try
         {
+            // Selecting a library track switches back to the NAudio file engine.
+            if (cdOpen) CloseCdSession(clearDisplay: false);
             advanceQueued = false;
             DisposeAudio();
             currentIndex = index;
@@ -768,6 +794,11 @@ public partial class MainWindow : Window
 
     private void UpdateDisplay()
     {
+        if (cdOpen)
+        {
+            TickCdPlayback();
+            return;
+        }
         if (output != null && reader != null)
             TryAdvanceEndedTrack(output, reader);
 
@@ -786,6 +817,7 @@ public partial class MainWindow : Window
 
     private void SeekSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
+        if (!changingSeek && cdOpen && draggingSeek) return;
         if (!changingSeek && reader != null && draggingSeek)
             reader.CurrentTime = TimeSpan.FromSeconds(reader.TotalTime.TotalSeconds * SeekSlider.Value / 100);
     }
@@ -794,7 +826,8 @@ public partial class MainWindow : Window
 
     private void SeekSlider_MouseUp(object sender, MouseButtonEventArgs e)
     {
-        if (reader != null)
+        if (cdOpen) SeekCdToPercent(SeekSlider.Value);
+        else if (reader != null)
             reader.CurrentTime = TimeSpan.FromSeconds(reader.TotalTime.TotalSeconds * SeekSlider.Value / 100);
         draggingSeek = false;
     }
@@ -819,6 +852,7 @@ public partial class MainWindow : Window
         VolumeKnobRotation.Angle = -135 + volumePercent * 2.7;
         UpdateVolumeWarningLed(); // DIM/MUTE do not change warningKnobPercent.
         if (reader != null) reader.Volume = (float)(volumePercent / 100.0);
+        ApplyCdVolumeIfSupported();
         if (DimButton != null)
         {
             DimButton.Content = dimRestoreVolume.HasValue ? "DIM ON" : "DIM";
