@@ -122,7 +122,7 @@ public partial class MainWindow
             if (!PlayCdTrack(track))
             {
                 TrackTitle.Text = "CD PLAYBACK ERROR";
-                DiscIndicator.ToolTip = "Disc found, but the drive cannot stream CD audio";
+                // Keep the specific error captured by PlayCdTrack for diagnosis.
             }
             return;
         }
@@ -143,7 +143,8 @@ public partial class MainWindow
             cdReader.Position = Math.Clamp((long)(offset.GetValueOrDefault().TotalSeconds * cdReader.WaveFormat.AverageBytesPerSecond), 0L, cdReader.Length);
             cdCurrentTrack = track;
             cdTrackDuration = cdReader.TotalTime;
-            var pcm = new WaveToSampleProvider(cdReader);
+            // CD-DA sectors are signed PCM16, not IEEE floating point.
+            var pcm = new Pcm16BitToSampleProvider(cdReader);
             cdVolume = new VolumeSampleProvider(pcm) { Volume = (float)(volumePercent / 100.0) };
             equalizer = new FiveBandEqualizer(cdVolume, eqGainDb);
             var player = new WaveOutEvent();
@@ -177,7 +178,7 @@ public partial class MainWindow
         {
             DisposeCdOutput();
             cdPlaying = cdPaused = false;
-            DiscIndicator.ToolTip = $"Audio CD error: {error.Message}";
+            DiscIndicator.ToolTip = $"Audio CD playback failed: {error.GetType().Name}: {error.Message}";
             TrackTitle.Text = "CD PLAYBACK ERROR";
             PlayButton.Content = "▶";
             return false;
