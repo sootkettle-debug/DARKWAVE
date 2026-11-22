@@ -81,8 +81,8 @@ public partial class MainWindow : Window
     private bool advanceQueued;
     private double expandedWindowHeight;
     private bool restoringPlayingTrackView;
-    private Color currentAccentColor = Color.FromRgb(0, 184, 76);
-    private SolidColorBrush currentAccentBrush = new(Color.FromRgb(0, 184, 76));
+    private Color currentAccentColor = Color.FromRgb(255, 138, 0);
+    private SolidColorBrush currentAccentBrush = new(Color.FromRgb(255, 138, 0));
 
     private static readonly string[] SupportedExtensions =
         [".mp3", ".wav", ".aiff", ".aif", ".wma", ".aac", ".m4a", ".flac"];
@@ -97,16 +97,12 @@ public partial class MainWindow : Window
             var workArea = SystemParameters.WorkArea;
             var freeSpaceBelow = Math.Max(0, workArea.Bottom - (Top + ActualHeight));
             Top += freeSpaceBelow * 0.40;
-            // Position the title bar and upper artwork 10px lower than before.
-            // Trim the matching height from the window so the lower library stays in place.
-            Top += 38;
-            Height = Math.Max(MinHeight, Height - 38);
             expandedWindowHeight = Height;
         }), DispatcherPriority.ApplicationIdle);
         UpdateVolumeControl();
         UpdateEqKnobs();
         expandedWindowHeight = Height;
-        ApplyAccentColor(Color.FromRgb(0, 184, 76));
+        ApplyAccentColor(Color.FromRgb(255, 138, 0));
         // Re-apply accents as WPF creates template content and virtualized list rows.
         PlaybackControlsPanel.AddHandler(FrameworkElement.LoadedEvent,
             new RoutedEventHandler(AccentElement_Loaded), true);
@@ -200,7 +196,7 @@ public partial class MainWindow : Window
         ApplyAccentColor(Color.FromRgb(166, 91, 224));
 
     private void AccentGreen_Click(object sender, RoutedEventArgs e) =>
-        ApplyAccentColor(Color.FromRgb(0, 184, 76));
+        ApplyAccentColor(Color.FromRgb(255, 138, 0));
 
     private void AccentOrange_Click(object sender, RoutedEventArgs e) =>
         ApplyAccentColor(Color.FromRgb(255, 138, 0));
@@ -316,7 +312,7 @@ public partial class MainWindow : Window
         if (expand)
         {
             SizeToContent = SizeToContent.Manual;
-            MinHeight = 560;
+            MinHeight = 580;
             Height = Math.Max(expandedWindowHeight, MinHeight);
         }
         else
@@ -343,7 +339,7 @@ public partial class MainWindow : Window
             ? new Thickness(0, 0, 0, 10)
             : new Thickness(0);
         LibraryTitle.Visibility = expand ? Visibility.Visible : Visibility.Collapsed;
-        LibraryToggleText.Text = expand ? "CLOSE LIBRARY" : "OPEN LIBRARY";
+        LibraryToggleText.Text = expand ? "CLOSE" : "OPEN";
         LibraryToggleButton.Content = expand ? "−" : "+";
 
         if (expand)
