@@ -32,12 +32,12 @@
       <Grid Height="20" VerticalAlignment="Center">
        <Track x:Name="PART_Track" IsDirectionReversed="{TemplateBinding IsDirectionReversed}">
         <Track.DecreaseRepeatButton>
-         <RepeatButton Command="Slider.DecreaseLarge" IsTabStop="False" Focusable="False" Height="8" VerticalAlignment="Center">
+         <RepeatButton Command="Slider.DecreaseLarge" IsTabStop="False" Focusable="False" Height="2" VerticalAlignment="Center">
           <RepeatButton.Template>
            <ControlTemplate TargetType="RepeatButton">
             <Grid>
-             <Border CornerRadius="4" Background="{DynamicResource AccentBrush}"/>
-             <Border CornerRadius="4" BorderBrush="#80FFFFFF" BorderThickness="0,1,0,0" Opacity="0.35">
+             <Border CornerRadius="1" Background="{DynamicResource AccentBrush}"/>
+             <Border CornerRadius="1" BorderBrush="#80FFFFFF" BorderThickness="0,1,0,0" Opacity="0.35">
               <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#AAFFFFFF" Offset="0"/><GradientStop Color="#00FFFFFF" Offset="0.5"/><GradientStop Color="#55000000" Offset="1"/></LinearGradientBrush></Border.Background>
              </Border>
             </Grid>
@@ -46,7 +46,7 @@
          </RepeatButton>
         </Track.DecreaseRepeatButton>
         <Track.Thumb>
-         <Thumb Width="14" Height="14" Focusable="False">
+         <Thumb Width="5" Height="5" Focusable="False">
           <Thumb.Template>
            <ControlTemplate TargetType="Thumb">
             <Ellipse Stroke="#849499" StrokeThickness="1">
@@ -58,10 +58,10 @@
          </Thumb>
         </Track.Thumb>
         <Track.IncreaseRepeatButton>
-         <RepeatButton Command="Slider.IncreaseLarge" IsTabStop="False" Focusable="False" Height="8" VerticalAlignment="Center">
+         <RepeatButton Command="Slider.IncreaseLarge" IsTabStop="False" Focusable="False" Height="2" VerticalAlignment="Center">
           <RepeatButton.Template>
            <ControlTemplate TargetType="RepeatButton">
-            <Border CornerRadius="4" BorderBrush="#526065" BorderThickness="0,1,0,1">
+            <Border CornerRadius="1" BorderBrush="#526065" BorderThickness="0,1,0,1">
              <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#465156" Offset="0"/><GradientStop Color="#20292D" Offset="0.23"/><GradientStop Color="#070A0C" Offset="0.64"/><GradientStop Color="#151B1E" Offset="1"/></LinearGradientBrush></Border.Background>
             </Border>
            </ControlTemplate>
@@ -192,7 +192,7 @@
  </TextBlock>
  </Grid>
 </StackPanel>
-</Grid><Grid Grid.Row="1" Margin="0,10,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock x:Name="ElapsedText" Text="0:00" Foreground="#B5A08D" FontSize="10" VerticalAlignment="Center"/><Slider x:Name="SeekSlider" Style="{StaticResource GlossySeekSliderStyle}" Grid.Column="1" Minimum="0" Maximum="100" Value="0" Margin="12,0" VerticalAlignment="Center" Foreground="#263238" Background="#11171A" ValueChanged="SeekSlider_ValueChanged" PreviewMouseLeftButtonDown="SeekSlider_MouseDown" PreviewMouseLeftButtonUp="SeekSlider_MouseUp"/><TextBlock x:Name="DurationText" Grid.Column="2" Text="0:00" Foreground="#B5A08D" FontSize="10" VerticalAlignment="Center"/></Grid><Border x:Name="PlaybackControlsPanel" SizeChanged="PlaybackControlsPanel_SizeChanged" Grid.Row="2" Background="#151B1E" BorderBrush="#455054" BorderThickness="1" CornerRadius="8" Padding="7" Margin="0,12,0,0"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="0"/><ColumnDefinition Width="Auto" MinWidth="305"/><ColumnDefinition Width="0"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock x:Name="ReadyStatusText" Text="Darkwave - Ready to play" Foreground="#D5A76D" FontFamily="Segoe Script" FontStyle="Italic" FontSize="13" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,9" TextTrimming="CharacterEllipsis"/><StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,3"><StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,6"><StackPanel Width="40.5" HorizontalAlignment="Center" ToolTip="L EQ: drag up/down or scroll to adjust (-12 to +12 dB)">
+</Grid><Grid Grid.Row="1" Margin="0,10,0,0"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="20"/></Grid.RowDefinitions><TextBlock x:Name="ElapsedText" Grid.Row="0" Text="0:00" Foreground="#B5A08D" FontSize="10" HorizontalAlignment="Left" Margin="9,0,0,0"/><TextBlock x:Name="DurationText" Grid.Row="0" Text="0:00" Foreground="#B5A08D" FontSize="10" HorizontalAlignment="Right" Margin="0,0,9,0"/><Slider x:Name="SeekSlider" Grid.Row="1" Style="{StaticResource GlossySeekSliderStyle}" Minimum="0" Maximum="100" Value="0" Margin="9,0,9,0" VerticalAlignment="Center" Foreground="#263238" Background="#11171A" ValueChanged="SeekSlider_ValueChanged" PreviewMouseLeftButtonDown="SeekSlider_MouseDown" PreviewMouseLeftButtonUp="SeekSlider_MouseUp"/></Grid><Border x:Name="PlaybackControlsPanel" SizeChanged="PlaybackControlsPanel_SizeChanged" Grid.Row="2" Background="#151B1E" BorderBrush="#455054" BorderThickness="1" CornerRadius="8" Padding="7" Margin="0,12,0,0"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="0"/><ColumnDefinition Width="Auto" MinWidth="305"/><ColumnDefinition Width="0"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock x:Name="ReadyStatusText" Text="Darkwave - Ready to play" Foreground="#D5A76D" FontFamily="Segoe Script" FontStyle="Italic" FontSize="13" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,9" TextTrimming="CharacterEllipsis"/><StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,3"><StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,6"><StackPanel Width="40.5" HorizontalAlignment="Center" ToolTip="L EQ: drag up/down or scroll to adjust (-12 to +12 dB)">
 <TextBlock Text="L" FontWeight="Bold" FontSize="9" Foreground="{DynamicResource AccentBrush}" TextAlignment="Center" Margin="0,0,0,1"/>
 <Grid x:Name="EqKnob0" Tag="0" Width="41" Height="41" HorizontalAlignment="Center" Background="Transparent" Cursor="Hand" MouseLeftButtonDown="EqKnob_MouseDown" MouseMove="EqKnob_MouseMove" MouseLeftButtonUp="EqKnob_MouseUp" LostMouseCapture="EqKnob_LostMouseCapture" MouseWheel="EqKnob_MouseWheel">
 <Grid.LayoutTransform><ScaleTransform ScaleX="0.75" ScaleY="0.75"/></Grid.LayoutTransform>
