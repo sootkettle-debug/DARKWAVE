@@ -1,14 +1,14 @@
 from pathlib import Path
 from PIL import Image
 
-# This image is derived from the Darkwave+CD icon supplied for the build.
+# Updated Darkwave+CD artwork, tightly cropped to fill the Windows icon.
 SOURCE = Path("NEONWAVE/Assets/DarkwaveCDIcon.png")
 OUT = Path("NEONWAVE/app.ico")
-with Image.open(SOURCE) as uploaded:
-    image = uploaded.convert("RGBA")
-    canvas = Image.new("RGBA", (256, 256), (0, 0, 0, 255))
-    image.thumbnail((256, 256), Image.Resampling.LANCZOS)
-    canvas.alpha_composite(image, ((256 - image.width) // 2, (256 - image.height) // 2))
+with Image.open(SOURCE) as artwork:
+    image = artwork.convert("RGBA").resize((256, 256), Image.Resampling.LANCZOS)
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(OUT, format="ICO", sizes=[(s, s) for s in (16, 24, 32, 48, 64, 128, 256)])
-print(f"Created Darkwave+CD application icon: {OUT}")
+    image.save(OUT, format="ICO", sizes=[
+        (16, 16), (24, 24), (32, 32), (48, 48),
+        (64, 64), (128, 128), (256, 256)
+    ])
+print(f"Created tightly cropped Darkwave+CD Windows icon: {OUT}")
