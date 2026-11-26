@@ -182,6 +182,8 @@ public partial class MainWindow
             { Color = currentAccentColor, BlurRadius = 8, ShadowDepth = 0, Opacity = .85 } : null;
         DiscModeButton.Foreground = discModeSelected ? currentAccentBrush : off;
         FileModeButton.Foreground = discModeSelected ? off : currentAccentBrush;
+        DiscSelectorDot.Fill = discModeSelected ? currentAccentBrush : off;
+        FileSelectorDot.Fill = discModeSelected ? off : currentAccentBrush;
     }
 
     private void PollAudioCd(string[] opticalDrives)
