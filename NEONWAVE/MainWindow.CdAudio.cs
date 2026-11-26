@@ -14,7 +14,7 @@ namespace NEONWAVE;
 
 public partial class MainWindow
 {
-    private bool discModeSelected = true;
+    private bool discModeSelected = false;
     private CdDigitalAudio? cdReader;
     private WaveOutEvent? cdOutput;
     private VolumeSampleProvider? cdVolume;
