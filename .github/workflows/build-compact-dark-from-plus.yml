@@ -31,12 +31,12 @@ jobs:
           path: publish/Darkwave+CD.exe
           if-no-files-found: error
           retention-days: 30
-      - name: Publish Darkwave+CD v1.0.0 release (once)
+      - name: Publish Darkwave+CD v1.0.2 release
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag="darkwave-plus-cd-v1.0.1"
+          tag="darkwave-plus-cd-v1.0.2"
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             echo "Updating $tag with the executable from this final build."
             gh release upload "$tag" "publish/Darkwave+CD.exe" --clobber --repo "$GITHUB_REPOSITORY"
@@ -44,6 +44,6 @@ jobs:
             gh release create "$tag" "publish/Darkwave+CD.exe" \
               --repo "$GITHUB_REPOSITORY" \
               --target "$GITHUB_SHA" \
-              --title "Darkwave+CD v1.0.1 — Windows x64" \
-              --notes "Updated Darkwave+CD release. Fixes clipped ADD FOLDER, ADD TRACK, and REMOVE TRACK labels; swaps source selector positions so FILE is left and DISC is right; FILE is selected on startup. Retains corrected icon and sharper ClearType track-list text. Built from the compact-dark-from-plus branch. Download Darkwave+CD.exe from Assets below."
+              --title "Darkwave+CD v1.0.2 — Windows x64" \
+              --notes "Adds support for Play/Pause, Next, Previous, and Stop multimedia keyboard keys while Darkwave+CD is the active window. Retains the fixed button labels, FILE-first source selector and corrected icon from v1.0.1. Standalone Windows x64 executable."
           fi
