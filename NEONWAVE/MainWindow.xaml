@@ -120,14 +120,14 @@
 </Grid><Grid Grid.Row="1" Margin="0,10,0,0"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="20"/></Grid.RowDefinitions><TextBlock x:Name="ElapsedText" Grid.Row="0" Text="0:00" Foreground="#B5A08D" FontSize="10" HorizontalAlignment="Left" Margin="9,0,0,0"/><TextBlock x:Name="DurationText" Grid.Row="0" Text="0:00" Foreground="#B5A08D" FontSize="10" HorizontalAlignment="Right" Margin="0,0,9,0"/><Slider x:Name="SeekSlider" Grid.Row="1" Style="{StaticResource GlossySeekSliderStyle}" Minimum="0" Maximum="100" Value="0" Margin="9,0,9,0" VerticalAlignment="Center" Foreground="#263238" Background="#11171A" ValueChanged="SeekSlider_ValueChanged" PreviewMouseLeftButtonDown="SeekSlider_MouseDown" PreviewMouseLeftButtonUp="SeekSlider_MouseUp"/></Grid><Border x:Name="PlaybackControlsPanel" SizeChanged="PlaybackControlsPanel_SizeChanged" Grid.Row="2" Background="#151B1E" BorderBrush="#455054" BorderThickness="1" CornerRadius="8" Padding="7" Margin="0,12,0,0"><Grid>
 <TextBlock x:Name="ReadyStatusText" Text="Darkwave - Ready to play" Foreground="#D5A76D" FontFamily="Segoe Script" FontStyle="Italic" FontSize="13" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,9" TextTrimming="CharacterEllipsis"/>
 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
-  <!-- Three equally weighted spacer columns expand between four fixed-size groups. -->
+  <!-- Three flexible spacers contract at minimum window width to keep the rightmost volume controls visible. -->
   <Grid.ColumnDefinitions>
     <ColumnDefinition Width="Auto"/>
-    <ColumnDefinition Width="*" MinWidth="9"/>
+    <ColumnDefinition Width="*" MinWidth="2"/>
     <ColumnDefinition Width="Auto"/>
-    <ColumnDefinition Width="*" MinWidth="9"/>
+    <ColumnDefinition Width="*" MinWidth="2"/>
     <ColumnDefinition Width="Auto"/>
-    <ColumnDefinition Width="*" MinWidth="9"/>
+    <ColumnDefinition Width="*" MinWidth="2"/>
     <ColumnDefinition Width="Auto"/>
   </Grid.ColumnDefinitions>
   <!-- Group 1: five-band EQ plus transport and CD eject -->
@@ -174,8 +174,8 @@
 <Ellipse Width="4" Height="4" Fill="#808080" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,2"/>
 </Grid></StackPanel></StackPanel>
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-      <Border x:Name="PlaybackButtonBar" BorderBrush="#465B52" BorderThickness="1" CornerRadius="7" Background="#11181B" Padding="1.5" HorizontalAlignment="Left" Margin="0"><StackPanel Orientation="Horizontal"><Button Content="|◀" Click="Previous_Click" FontSize="7.5" Width="45" Height="21"/><Button x:Name="PlayButton" Content="▶" Click="Play_Click" FontSize="7.5" Width="45" Height="21" Background="#24264A"/><Button Content="■" Click="Stop_Click" FontSize="7.5" Width="45" Height="21"/><Button Content="▶|" Click="Next_Click" FontSize="7.5" Width="45" Height="21"/></StackPanel></Border>
-      <Button x:Name="EjectCdButton" Content="⏏" Click="EjectCd_Click" FontSize="13" Width="36" Height="23" Margin="9,0,0,0" ToolTip="Eject the CD/DVD tray"/>
+      <Border x:Name="PlaybackButtonBar" BorderBrush="#465B52" BorderThickness="1" CornerRadius="7" Background="#11181B" Padding="1.5" HorizontalAlignment="Left" Margin="0"><StackPanel Orientation="Horizontal"><Button Content="|◀" Click="Previous_Click" FontSize="7.5" Width="42" Height="21"/><Button x:Name="PlayButton" Content="▶" Click="Play_Click" FontSize="7.5" Width="42" Height="21" Background="#24264A"/><Button Content="■" Click="Stop_Click" FontSize="7.5" Width="42" Height="21"/><Button Content="▶|" Click="Next_Click" FontSize="7.5" Width="42" Height="21"/></StackPanel></Border>
+      <Button x:Name="EjectCdButton" Content="⏏" Click="EjectCd_Click" FontSize="13" Width="36" Height="23" Margin="6,0,0,0" ToolTip="Eject the CD/DVD tray"/>
     </StackPanel>
   </StackPanel>
   <!-- Group 2: accent colour buttons -->
