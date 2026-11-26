@@ -195,9 +195,7 @@
                      HorizontalAlignment="Center" VerticalAlignment="Center"
                      TextAlignment="Center" IsHitTestVisible="False"/>
         </Border>
-        <Button x:Name="DiscModeButton" Content="●" Click="DiscMode_Click"
-                Width="18" Height="16" FontSize="8" Padding="0" Margin="0,3,0,0"
-                HorizontalAlignment="Center" ToolTip="Select audio CD playback"/>
+        <Button x:Name="DiscModeButton" Click="DiscMode_Click" Width="18" Height="16" Padding="0" Margin="0,3,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" ToolTip="Select audio CD playback"><Ellipse Width="6" Height="6" Fill="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/></Button>
       </StackPanel>
       <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Border Width="48" Height="23" Background="#0A0E10" BorderBrush="#566166"
@@ -207,9 +205,7 @@
                      HorizontalAlignment="Center" VerticalAlignment="Center"
                      TextAlignment="Center" IsHitTestVisible="False"/>
         </Border>
-        <Button x:Name="FileModeButton" Content="●" Click="FileMode_Click"
-                Width="18" Height="16" FontSize="8" Padding="0" Margin="0,3,0,0"
-                HorizontalAlignment="Center" ToolTip="Select music library playback"/>
+        <Button x:Name="FileModeButton" Click="FileMode_Click" Width="18" Height="16" Padding="0" Margin="0,3,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" ToolTip="Select music library playback"><Ellipse Width="6" Height="6" Fill="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/></Button>
       </StackPanel>
     </Grid>
     <StackPanel x:Name="AccentButtonsPanel" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,3"><StackPanel.RenderTransform><TranslateTransform x:Name="AccentButtonsOffset"/></StackPanel.RenderTransform><Button Click="AccentPurple_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Purple accent"><Border Width="6" Height="6" CornerRadius="4" Background="#7027A8"/></Button><Button Click="AccentGreen_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Green accent"><Border Width="6" Height="6" CornerRadius="4" Background="#00B84C"/></Button><Button Click="AccentOrange_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Orange accent"><Border Width="6" Height="6" CornerRadius="4" Background="#FF8A00"/></Button><Button Click="AccentBlue_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Blue accent"><Border Width="6" Height="6" CornerRadius="4" Background="#268BFF"/></Button><Button Click="AccentRed_Click" Width="18" Height="18" Padding="0" Margin="1.5,0" ToolTip="Red accent"><Border Width="6" Height="6" CornerRadius="4" Background="#E53935"/></Button></StackPanel>
@@ -260,7 +256,10 @@
   <StackPanel Grid.Column="6" Orientation="Vertical" VerticalAlignment="Center" Width="65">
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0">
  <Border Height="24" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="5" Background="#07110C" Margin="0,0,0,3" Padding="0"><TextBlock x:Name="VolumeText" Text="40%" Foreground="{DynamicResource AccentBrush}" FontSize="12" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center"/></Border>
- <Button x:Name="DimButton" Content="DIM" Click="Dim_Click" ToolTip="Lower to 10%; click again to restore previous volume" Height="17.3" FontSize="9" Margin="0,0,0,2.3" Padding="0"/>
+ <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,2.3">
+  <Button x:Name="DimSetButton" Content="SET" Click="DimSettings_Click" ToolTip="Choose DIM volume level" Width="25" Height="17.3" FontSize="7.5" Padding="0" Margin="0,0,2,0"/>
+  <Button x:Name="DimButton" Content="DIM" Click="Dim_Click" ToolTip="Lower to 10%; click again to restore previous volume" Width="31" Height="17.3" FontSize="9" Margin="0" Padding="0"/>
+ </StackPanel>
  <Button x:Name="MuteButton" Content="MUTE" Click="Mute_Click" ToolTip="Mute / restore volume" Height="17.3" FontSize="7.5" Margin="0" Padding="0"/>
 </StackPanel>
   </StackPanel>
