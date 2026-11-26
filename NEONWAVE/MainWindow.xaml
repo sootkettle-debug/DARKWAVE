@@ -187,7 +187,7 @@
         <ColumnDefinition Width="5"/>
         <ColumnDefinition Width="50"/>
       </Grid.ColumnDefinitions>
-      <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Border Width="48" Height="23" Background="#0A0E10" BorderBrush="#566166"
                 BorderThickness="1" CornerRadius="4" Padding="2">
           <TextBlock x:Name="DiscIndicator" Text="DISC" FontFamily="Segoe UI"
@@ -199,7 +199,7 @@
                 Width="18" Height="16" FontSize="8" Padding="0" Margin="0,3,0,0"
                 HorizontalAlignment="Center" ToolTip="Select audio CD playback"/>
       </StackPanel>
-      <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Border Width="48" Height="23" Background="#0A0E10" BorderBrush="#566166"
                 BorderThickness="1" CornerRadius="4" Padding="2">
           <TextBlock x:Name="FileIndicator" Text="FILE" FontFamily="Segoe UI"
