@@ -93,6 +93,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        InstallMediaKeyHandler();
         // Move the complete window after WPF has finished CenterScreen positioning.
         // Use 40% of the available space below it, keeping the title bar on screen.
         Loaded += (_, _) => Dispatcher.BeginInvoke(new Action(() =>
