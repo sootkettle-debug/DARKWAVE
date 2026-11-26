@@ -38,7 +38,8 @@ jobs:
         run: |
           tag="darkwave-plus-cd-v1.0.1"
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "Release $tag already exists; keeping its original binary."
+            echo "Updating $tag with the executable from this final build."
+            gh release upload "$tag" "publish/Darkwave+CD.exe" --clobber --repo "$GITHUB_REPOSITORY"
           else
             gh release create "$tag" "publish/Darkwave+CD.exe" \
               --repo "$GITHUB_REPOSITORY" \
