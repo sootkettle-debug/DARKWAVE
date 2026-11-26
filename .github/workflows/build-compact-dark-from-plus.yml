@@ -36,13 +36,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag="darkwave-plus-cd-v1.0.0"
+          tag="darkwave-plus-cd-v1.0.1"
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             echo "Release $tag already exists; keeping its original binary."
           else
             gh release create "$tag" "publish/Darkwave+CD.exe" \
               --repo "$GITHUB_REPOSITORY" \
               --target "$GITHUB_SHA" \
-              --title "Darkwave+CD v1.0.0 — Windows x64" \
-              --notes "First public Darkwave+CD release. Standalone Windows x64 executable with the corrected application icon and sharper ClearType track-list text. Built from the compact-dark-from-plus branch. Download Darkwave+CD.exe from Assets below."
+              --title "Darkwave+CD v1.0.1 — Windows x64" \
+              --notes "Updated Darkwave+CD release. Fixes clipped ADD FOLDER, ADD TRACK, and REMOVE TRACK labels; swaps source selector positions so FILE is left and DISC is right; FILE is selected on startup. Retains corrected icon and sharper ClearType track-list text. Built from the compact-dark-from-plus branch. Download Darkwave+CD.exe from Assets below."
           fi
